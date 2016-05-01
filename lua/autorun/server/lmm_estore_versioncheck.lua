@@ -1,6 +1,6 @@
 require( "tmysql4" ) 
 --[[You really should not edit this!]]--
-local version = "1.0" -- DO NOT EDIT THIS!
+local version = "betaV1" -- DO NOT EDIT THIS!
 local version_url = "https://gist.githubusercontent.com/XxLMM13xXgaming/c761d31a8358565bc758c28b4972ce77/raw/LMMESTORE" -- DO NOT EDIT THIS!
 local update_url = "https://github.com/XxLMM13xXgaming/lmm_estore" -- DO NOT EDIT THIS!
 local update_ur = "https://gist.githubusercontent.com/XxLMM13xXgaming/c89c161d6424d456acbe0e68cc276384/raw/LMMESTORE%2520UR" -- DO NOT EDIT THIS!

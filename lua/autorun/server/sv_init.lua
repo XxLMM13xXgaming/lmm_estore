@@ -724,7 +724,7 @@ net.Receive("LMMESTOREOpenItems", function(len, ply)
 		thetableshipments = {}
 		thetableweapons = {}
 		thetableammo = {}
-		
+				
 		LMMESTOREdb:Query("SELECT * FROM shipments", function(result)
 			for i=1, #result[1].data do
 				if LMMESTOREGetUserBySteamID(result[1].data[i].seller) != nil then
@@ -741,7 +741,7 @@ net.Receive("LMMESTOREOpenItems", function(len, ply)
 				local price = result[1].data[i].price
 				local id = result[1].data[i].id
 				
-				if seller == ply:SteamID64() then
+				if result[1].data[i].seller == ply:SteamID64() then
 					table.insert( thetableshipments, {seller, sellerhere, count, weapon, model, string.sub(desc, 1, 63).."...", price, id, tonumber(result[1].data[i].pending)} )
 				end
 			end
@@ -762,7 +762,7 @@ net.Receive("LMMESTOREOpenItems", function(len, ply)
 				price = result[1].data[i].price
 				id = result[1].data[i].id
 				
-				if seller == ply:SteamID64() then				
+				if result[1].data[i].seller == ply:SteamID64() then				
 					table.insert( thetableweapons, {seller, sellerhere, weapon, model, string.sub(desc, 1, 63).."...", price, id, tonumber(result[1].data[i].pending)} )
 				end
 			end
@@ -784,7 +784,7 @@ net.Receive("LMMESTOREOpenItems", function(len, ply)
 				price = result[1].data[i].price
 				id = result[1].data[i].id
 				
-				if seller == ply:SteamID64() then
+				if result[1].data[i].seller == ply:SteamID64() then
 					table.insert( thetableammo, {seller, sellerhere, count, ammoType, model, string.sub(desc, 1, 63).."...", price, id, tonumber(result[1].data[i].pending)} )
 				end
 			end

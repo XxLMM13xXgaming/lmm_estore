@@ -1137,7 +1137,7 @@ net.Receive("LMMESTOREOpeneStore", function()
 				draw.RoundedBox(0, 2, 2, w , h , Color(0,0,0,125))
 			end			
 			ItemMain.DoClick = function()
-				if v[2] == false then
+				if v[2] == true then
 					Derma_Query( "Are you sure you want to buy this Shipment?\nWeapon: "..v[4].."\nCount: "..v[3].."\nSeller: "..v[1]:Nick().."\nPrice: "..v[7], "eStore comfirm", "Yes", function() net.Start("LMMESTOREBuyShipment") net.WriteString(v[8]) net.SendToServer() DFrame:Close() end, "No", function() end)			
 				else
 					Derma_Query( "Are you sure you want to buy this Shipment?\nWeapon: "..v[4].."\nCount: "..v[3].."\nSeller: "..v[1].."\nPrice: "..v[7], "eStore comfirm", "Yes", function() net.Start("LMMESTOREBuyShipment") net.WriteString(v[8]) net.SendToServer() DFrame:Close() end, "No", function() end)			
@@ -1198,7 +1198,7 @@ net.Receive("LMMESTOREOpeneStore", function()
 				draw.RoundedBox(0, 2, 2, w , h , Color(0,0,0,125))
 			end			
 			ItemMain.DoClick = function()
-				if tobool(v[1]) != false then
+				if v[2] == true then
 					Derma_Query( "Are you sure you want to buy this Weapon?\nWeapon: "..v[3].."\nSeller: "..v[1]:Nick().."\nPrice: "..v[6], "eStore comfirm", "Yes", function() net.Start("LMMESTOREBuyWeapon") net.WriteString(v[7]) net.SendToServer() DFrame:Close() end, "No", function() end)			
 				else
 					Derma_Query( "Are you sure you want to buy this Weapon?\nWeapon: "..v[3].."\nSeller: Offline Player\nPrice: "..v[6], "eStore comfirm", "Yes", function() net.Start("LMMESTOREBuyWeapon") net.WriteString(v[7]) net.SendToServer() DFrame:Close() end, "No", function() end)			
@@ -1259,7 +1259,7 @@ net.Receive("LMMESTOREOpeneStore", function()
 				draw.RoundedBox(0, 2, 2, w , h , Color(0,0,0,125))
 			end			
 			ItemMain.DoClick = function()
-				if tobool(v[1]) != false then
+				if v[2] == true then
 					Derma_Query( "Are you sure you want to buy this ammo?\nAmmo type: "..v[4].."\nAmmo count: "..v[3].."\nSeller: "..v[1]:Nick().."\nPrice: "..v[7], "eStore comfirm", "Yes", function() net.Start("LMMESTOREBuyAmmo") net.WriteString(v[8]) net.SendToServer() DFrame:Close() end, "No", function() end)			
 				else
 					Derma_Query( "Are you sure you want to buy this ammo?\nAmmo type: "..v[4].."\nAmmo count: "..v[3].."\nSeller: "..v[1].."\nPrice: "..v[7], "eStore comfirm", "Yes", function() net.Start("LMMESTOREBuyAmmo") net.WriteString(v[8]) net.SendToServer() DFrame:Close() end, "No", function() end)							

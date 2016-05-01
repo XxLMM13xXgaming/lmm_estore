@@ -191,6 +191,17 @@ function LMMESTOREOpeneStoreDMANOpen(ply, seller)
 	end
 end
 
+function LMMESTORESpawnNPCAuto()
+		
+	local npc = ents.Create("estore_npc")
+	npc:Spawn()
+	npc:SetPos( LMMESTOREConfig.NPCPos )
+	npc:SetAngles( LMMESTOREConfig.NPCAng )
+	
+	npc:DropToFloor()	
+end
+hook.Add( "InitPostEntity", "LMMESTORESpawnNPCAuto", LMMESTORESpawnNPCAuto)
+
 function ENT:AcceptInput( Name, Activator, Caller )		
 	if Name == "Use" and Caller:IsPlayer() then
 		if !LMMESTOREUserBanned(Caller) then

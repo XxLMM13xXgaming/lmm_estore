@@ -1,5 +1,5 @@
 LMMESTOREConfig = {}
-LMMESTOREConfig.DevMode = true
+LMMESTOREConfig.DevMode = false -- please keep false
 /*
 	Made By: XxLMM13xXgaming
 */
@@ -62,3 +62,6 @@ LMMESTOREConfig.BotSales.S3 = {
 	BotSalesDesc = "Short Description",
 	BotSalesPrice = 100
 }
+
+LMMESTOREConfig.NPCPos = Vector(-148.808853, -1021.097656, -131.968750) -- Pos you want the NPC to spawn
+LMMESTOREConfig.NPCAng = Angle(1.100129, -0.680528, 0.000000) -- Ang you want the NPC to spawn
