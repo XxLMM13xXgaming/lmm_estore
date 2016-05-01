@@ -249,9 +249,6 @@ function LMMESTORECreateBotSale( specialnum )
 		end
 	end
 end
-
-LMMESTORECreateBotSale(0)
-
 ----------------------------------------------------------------------------
 -- Functions
 ----------------------------------------------------------------------------
@@ -474,6 +471,11 @@ timer.Create("LMMESTORECheckForUnSub", 10, 0, function()
 		end
 	end
 end)
+
+timer.Create("LMMESTOREBotSalesTimer", LMMESTOREConfig.BotSalesTime * 60, 0, function()
+	LMMESTORECreateBotSale(0)
+end)
+
 ----------------------------------------------------------------------------
 -- Timers
 ----------------------------------------------------------------------------

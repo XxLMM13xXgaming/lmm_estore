@@ -27,13 +27,13 @@ if (SERVER) then
 	----------------------------------------------------------------------------
 	-- Connect to database
 	----------------------------------------------------------------------------
-	LMMESTOREdb, LMMESTOREerr = tmysql.initialize(LMMESTOREMYSQLConfig.host, LMMESTOREMYSQLConfig.username, LMMESTOREMYSQLConfig.password, LMMESTOREMYSQLConfig.database, LMMESTOREMYSQLConfig.port)
+	LMMESTOREdb, LMMESTOREerr = tmysql.initialize(LMMESTOREMYSQLConfig.host, LMMESTOREMYSQLConfig.username, LMMESTOREMYSQLConfig.password, LMMESTOREMYSQLConfig.database, LMMESTOREMYSQLConfig.port, nil, CLIENT_MULTI_STATEMENTS )
 
 	if LMMESTOREerr != nil or tostring( type( LMMESTOREdb ) ) == "bool" then
 		MsgC( Color(255,0,0), "[eStore] Error connecting to the database!\n" )
 		MsgC( Color(255,0,0), "[eStore] MySQL Error: " .. LMMESTOREerr.."\n")
 	else
-		MsgC(Color(0,255,0), "[eStore] Connected to the database! MySQL is setup!\n")
+		MsgC(Color(0,255,0), "[eStore] Connected to the database!\n")
 	end
 	----------------------------------------------------------------------------
 	-- Connect to database
@@ -42,68 +42,123 @@ if (SERVER) then
 	----------------------------------------------------------------------------
 	-- Create tables
 	----------------------------------------------------------------------------
-	LMMESTOREdb:Query("CREATE TABLE IF NOT EXISTS `ammo` (  'id' int(11) NOT NULL AUTO_INCREMENT,  `seller` varchar(255) NOT NULL,  `count` varchar(255) NOT NULL,  `weapon` varchar(255) NOT NULL,  `model` varchar(255) NOT NULL,  `description` varchar(255) NOT NULL,  `price` varchar(255) NOT NULL,  `pending` varchar(255) NOT NULL) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;", function(result)
-		if result[1].status == true then
-			MsgC(Color(0,255,0), "[eStore] Creating ammo table in the MySQL database!")
-		else
-			MsgC(Color(255,0,0), "[eStore] Error creating ammo table in the MySQL database!")
-			PrintTable(result)
-		end
-	end)
+	LMMESTORESQLCreateTables = [[CREATE TABLE IF NOT EXISTS `ammo` (
+  `id` int(11) NOT NULL,
+  `seller` varchar(255) NOT NULL,
+  `count` varchar(255) NOT NULL,
+  `weapon` varchar(255) NOT NULL,
+  `model` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `price` varchar(255) NOT NULL,
+  `pending` varchar(255) NOT NULL
+);
 
-	LMMESTOREdb:Query("CREATE TABLE IF NOT EXISTS `banned` ('id' int(11) NOT NULL AUTO_INCREMENT, `banned` varchar(255) NOT NULL,  `time` varchar(255) NOT NULL) ENGINE=MyISAM AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;", function(result)
-		if result[1].status == true then
-			MsgC(Color(0,255,0), "[eStore] Creating banned table in the MySQL database!")
-		else
-			MsgC(Color(255,0,0), "[eStore] Error creating banned table in the MySQL database!")
-			PrintTable(result)
-		end	
-	end)
+CREATE TABLE IF NOT EXISTS `banned` (
+  `id` int(11) NOT NULL,
+  `banned` varchar(255) NOT NULL,
+  `time` varchar(255) NOT NULL
+);
 
-	LMMESTOREdb:Query("CREATE TABLE IF NOT EXISTS `pickup` (  'id' int(11) NOT NULL AUTO_INCREMENT,  `type` varchar(255) NOT NULL,  `seller` varchar(255) NOT NULL,  `weapon` varchar(255) NOT NULL,  `description` varchar(255) NOT NULL,  `pending` varchar(255) NOT NULL,  `buyer` varchar(255) NOT NULL) ENGINE=MyISAM AUTO_INCREMENT=40 DEFAULT CHARSET=utf8;", function(result)
-		if result[1].status == true then
-			MsgC(Color(0,255,0), "[eStore] Creating pickup table in the MySQL database!")
-		else
-			MsgC(Color(255,0,0), "[eStore] Error creating pickup table in the MySQL database!")
-			PrintTable(result)
-		end
-	end)
+CREATE TABLE IF NOT EXISTS `pickup` (
+  `id` int(11) NOT NULL,
+  `type` varchar(255) NOT NULL,
+  `seller` varchar(255) NOT NULL,
+  `count` varchar(255) NOT NULL,
+  `weapon` varchar(255) NOT NULL,
+  `model` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `price` varchar(255) NOT NULL,
+  `pending` varchar(255) NOT NULL,
+  `buyer` varchar(255) NOT NULL
+);
 
-	LMMESTOREdb:Query("CREATE TABLE IF NOT EXISTS `players` (  'id' int(11) NOT NULL AUTO_INCREMENT,  `player` varchar(255) NOT NULL,  `earned` varchar(255) NOT NULL,  `spent` varchar(255) NOT NULL,  `unclaimed` varchar(255) NOT NULL) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;", function(result)
-		if result[1].status == true then
-			MsgC(Color(0,255,0), "[eStore] Creating players table in the MySQL database!")
-		else
-			MsgC(Color(255,0,0), "[eStore] Error creating players table in the MySQL database!")
-			PrintTable(result)
-		end
-	end)
+CREATE TABLE IF NOT EXISTS `players` (
+  `id` int(11) NOT NULL,
+  `player` varchar(255) NOT NULL,
+  `earned` varchar(255) NOT NULL,
+  `spent` varchar(255) NOT NULL,
+  `unclaimed` varchar(255) NOT NULL
+);
 
-	LMMESTOREdb:Query("CREATE TABLE IF NOT EXISTS `shipments` (  'id' int(11) NOT NULL AUTO_INCREMENT,  `seller` varchar(255) NOT NULL,  `count` varchar(255) NOT NULL,  `weapon` varchar(255) NOT NULL,  `model` varchar(255) NOT NULL,  `description` varchar(255) NOT NULL,  `price` varchar(255) NOT NULL,  `pending` varchar(255) NOT NULL) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;", function(result)
-		if result[1].status == true then
-			MsgC(Color(0,255,0), "[eStore] Creating shipments table in the MySQL database!")
-		else
-			MsgC(Color(255,0,0), "[eStore] Error creating shipments table in the MySQL database!")
-			PrintTable(result)
-		end
-	end)
+CREATE TABLE IF NOT EXISTS `shipments` (
+  `id` int(11) NOT NULL,
+  `seller` varchar(255) NOT NULL,
+  `count` varchar(255) NOT NULL,
+  `weapon` varchar(255) NOT NULL,
+  `model` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `price` varchar(255) NOT NULL,
+  `pending` varchar(255) NOT NULL
+);
 
-	LMMESTOREdb:Query("CREATE TABLE IF NOT EXISTS `subscriptions` (  'id' int(11) NOT NULL AUTO_INCREMENT, `subscribed` varchar(255) NOT NULL,  `time` varchar(255) NOT NULL) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;", function(result)
-		if result[1].status == true then
-			MsgC(Color(0,255,0), "[eStore] Creating subscriptions table in the MySQL database!")
-		else
-			MsgC(Color(255,0,0), "[eStore] Error creating subscriptions table in the MySQL database!")
-			PrintTable(result)
-		end
-	end)
+CREATE TABLE IF NOT EXISTS `subscriptions` (
+  `id` int(11) NOT NULL,
+  `subscribed` varchar(255) NOT NULL,
+  `time` varchar(255) NOT NULL
+);
 
-	LMMESTOREdb:Query("CREATE TABLE IF NOT EXISTS `weapons` (  'id' int(11) NOT NULL AUTO_INCREMENT,  `seller` varchar(255) NOT NULL,  `weapon` varchar(255) NOT NULL,  `model` varchar(255) NOT NULL,  `description` varchar(255) NOT NULL,  `price` varchar(255) NOT NULL,  `pending` varchar(255) NOT NULL) ENGINE=MyISAM AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;", function(result)
-		if result[1].status == true then
-			MsgC(Color(0,255,0), "[eStore] Creating weapons table in the MySQL database!")
-		else
-			MsgC(Color(255,0,0), "[eStore] Error creating weapons table in the MySQL database!")
+CREATE TABLE IF NOT EXISTS `weapons` (
+  `id` int(11) NOT NULL,
+  `seller` varchar(255) NOT NULL,
+  `weapon` varchar(255) NOT NULL,
+  `model` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `price` varchar(255) NOT NULL,
+  `pending` varchar(255) NOT NULL
+);
+
+
+ALTER TABLE `ammo`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `banned`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `pickup`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `players`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `shipments`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `subscriptions`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `weapons`
+  ADD PRIMARY KEY (`id`);
+
+
+ALTER TABLE `ammo`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=8;
+
+ALTER TABLE `banned`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=24;
+
+ALTER TABLE `pickup`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=40;
+
+ALTER TABLE `players`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
+
+ALTER TABLE `shipments`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=18;
+
+ALTER TABLE `subscriptions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=9;
+
+ALTER TABLE `weapons`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=32;]]
+	
+	LMMESTOREdb:Query( LMMESTORESQLCreateTables, function(result)
+		if result[1].status == false then
+			MsgC(Color(255,0,0), "[eStore] Error setting up the MySQL tables!\n")		
 			PrintTable(result)
+		else
+			MsgC(Color(0,255,0), "[eStore] MySQL tables have been setup!\n")
 		end
-	end)	
+	end	)
 	----------------------------------------------------------------------------
 	-- Create tables
 	----------------------------------------------------------------------------

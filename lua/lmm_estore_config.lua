@@ -17,6 +17,8 @@ LMMESTOREConfig.SubTime = 10080 -- How much time in min for the subcription to l
 -- I would not change this it has some good info in here!
 LMMESTOREConfig.MoreInfoText = "Welcome to the eStore! This is a garrysmod market place for selling weapons, shipments, and ammo!\n\n FOR USERS/BUYERS\n To buy a item simply click on the item in the estore and click 'yes' to the are you sure and then go to your local eStore delivery man and collect your item!\n\nFOR SELLERS/MERCHANTS\n To sell a item buy a shipment, weapon, or ammo box and look at it and type !estore and you will be prompted to enter a short description and a price! Next you will need to visit your profile by typing !estore and clicking 'Dashbored' and going to 'My profile', there you will click 'Buy/renew a subscription' and buy a subscription! Next go to the dashbored and click 'Manage my items' and click on your item and click 'submit to the market'! Your item will be added to the market for all to see AND for people to buy even when your offline! TO collect your income you can go to your profile and click 'collect money' you will then receive your money!\n\n" -- Text to display in the more info section
 
+LMMESTOREConfig.BotSalesTime = 60 -- Time in min to create a bot sale
+
 LMMESTOREConfig.BotSales = {}
 
 /*
