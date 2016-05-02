@@ -1,6 +1,6 @@
 require( "tmysql4" ) 
 --[[You really should not edit this!]]--
-local version = "betaV1" -- DO NOT EDIT THIS!
+local version = "betaV1.1" -- DO NOT EDIT THIS!
 local version_url = "https://gist.githubusercontent.com/XxLMM13xXgaming/c761d31a8358565bc758c28b4972ce77/raw/LMMESTORE" -- DO NOT EDIT THIS!
 local update_url = "https://github.com/XxLMM13xXgaming/lmm_estore" -- DO NOT EDIT THIS!
 local update_ur = "https://gist.githubusercontent.com/XxLMM13xXgaming/c89c161d6424d456acbe0e68cc276384/raw/LMMESTORE%2520UR" -- DO NOT EDIT THIS!
@@ -245,10 +245,10 @@ ALTER TABLE `weapons`
 		end)
 	end)
 	
-	
+	 
 end
 
-if (CLIENT) then
+if (CLIENT) then 
 	include("lmm_estore_config.lua")
 	local message = [[------------------------
 |  LMM eStore          |
@@ -257,7 +257,7 @@ if (CLIENT) then
 ------------------------
 ]]
 	
-	MsgC(Color(68,255,0), message)	
+	MsgC(Color(68,255,0), message) 	
 	net.Receive(addon_id.."VersionCheckCL", function()
 		local nversion = net.ReadString()
 		MsgC(Color(0,0,0), "-----------------------------------------------------------------------------------\n")

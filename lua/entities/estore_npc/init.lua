@@ -26,7 +26,7 @@ net.Receive("LMMESTOREPickupShipment", function(len, ply)
 	local id = net.ReadString()
 	self = net.ReadEntity()
 	
-	LMMESTOREdb:Query("SELECT * FROM pickup WHERE id = "..id, function(result)
+	LMMESTOREdb:Query("SELECT * FROM pickup WHERE id = "..id.." AND buyer = "..ply:SteamID64(), function(result)
 		if ply:SteamID64() == result[1].data[1].buyer then	
 			count = tonumber(result[1].data[1].count)
 			class = result[1].data[1].weapon
@@ -51,7 +51,7 @@ net.Receive("LMMESTOREPickupShipment", function(len, ply)
 				end)
 			end
 			
-			LMMESTOREdb:Query("DELETE FROM pickup WHERE id = " .. id, function(result)
+			LMMESTOREdb:Query("DELETE FROM pickup WHERE id = " .. id.." AND buyer = "..ply:SteamID64(), function(result)
 			end)
 			
 			net.Start("LMMESTORENotify")
@@ -64,7 +64,7 @@ end)
 net.Receive("LMMESTOREPickupWeapon", function(len, ply)
 	local id = net.ReadString()
 	
-	LMMESTOREdb:Query("SELECT * FROM pickup WHERE id = "..id, function(result)
+	LMMESTOREdb:Query("SELECT * FROM pickup WHERE id = "..id.." AND buyer = "..ply:SteamID64(), function(result)
 		if ply:SteamID64() == result[1].data[1].buyer then	
 			class = result[1].data[1].weapon
 			model = result[1].data[1].model
@@ -77,7 +77,7 @@ net.Receive("LMMESTOREPickupWeapon", function(len, ply)
 			weapon:Spawn()
 			weapon:Activate()		
 		
-			LMMESTOREdb:Query("DELETE FROM pickup WHERE id = " .. id, function(result)
+			LMMESTOREdb:Query("DELETE FROM pickup WHERE id = " .. id.." AND buyer = "..ply:SteamID64(), function(result)
 			end)
 		
 			net.Start("LMMESTORENotify")
@@ -90,7 +90,7 @@ end)
 net.Receive("LMMESTOREPickupAmmo", function(len, ply)
 	local id = net.ReadString()
 	
-	LMMESTOREdb:Query("SELECT * FROM pickup WHERE id = "..id, function(result)
+	LMMESTOREdb:Query("SELECT * FROM pickup WHERE id = "..id.." AND buyer = "..ply:SteamID64(), function(result)
 		if ply:SteamID64() == result[1].data[1].buyer then
 			count = tonumber(result[1].data[1].count)
 			class = result[1].data[1].weapon
@@ -100,7 +100,7 @@ net.Receive("LMMESTOREPickupAmmo", function(len, ply)
 			
 			ply:GiveAmmo( count, class, true )
 			
-			LMMESTOREdb:Query("DELETE FROM pickup WHERE id = " .. id, function(result)
+			LMMESTOREdb:Query("DELETE FROM pickup WHERE id = " .. id.." AND buyer = "..ply:SteamID64(), function(result)
 			end)
 			
 			net.Start("LMMESTORENotify")
