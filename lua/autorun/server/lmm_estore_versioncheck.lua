@@ -29,7 +29,7 @@ if (SERVER) then
 	----------------------------------------------------------------------------
 	LMMESTOREdb, LMMESTOREerr = tmysql.initialize(LMMESTOREMYSQLConfig.host, LMMESTOREMYSQLConfig.username, LMMESTOREMYSQLConfig.password, LMMESTOREMYSQLConfig.database, LMMESTOREMYSQLConfig.port, nil, CLIENT_MULTI_STATEMENTS )
 
-	if LMMESTOREerr != nil or tostring( type( LMMESTOREdb ) ) == "bool" then
+	if LMMESTOREerr != nil or tostring( type( LMMESTOREdb ) ) == "boolean" then
 		MsgC( Color(255,0,0), "[eStore] Error connecting to the database!\n" )
 		MsgC( Color(255,0,0), "[eStore] MySQL Error: " .. LMMESTOREerr.."\n")
 	else
