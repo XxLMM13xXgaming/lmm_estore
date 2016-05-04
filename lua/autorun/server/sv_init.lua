@@ -585,16 +585,18 @@ net.Receive("LMMESTOREChangeShipmentPD", function(len, ply)
 	local price = net.ReadString()
 	local desc = net.ReadString()
 	
-	if !LMMESTOREUserBanned(ply) then	
-		LMMESTOREdb:Query("UPDATE shipments SET price = "..price..", description = '"..desc.."' WHERE id = "..id.." AND seller = "..ply:SteamID64(), function(result)
-			if result[1].status == false then
-				PrintTable(result)
-			else
-				net.Start("LMMESTORENotify")
-					net.WriteString("The price and description has been changed!")
-				net.Send(ply)
-			end
-		end)
+	if !LMMESTOREUserBanned(ply) then
+		if price > 0 then
+			LMMESTOREdb:Query("UPDATE shipments SET price = "..price..", description = '"..desc.."' WHERE id = "..id.." AND seller = "..ply:SteamID64(), function(result)
+				if result[1].status == false then
+					PrintTable(result)
+				else
+					net.Start("LMMESTORENotify")
+						net.WriteString("The price and description has been changed!")
+					net.Send(ply)
+				end
+			end)
+		end
 	end
 end)
 
@@ -603,16 +605,18 @@ net.Receive("LMMESTOREChangeWeaponPD", function(len, ply)
 	local price = net.ReadString()
 	local desc = net.ReadString()
 	
-	if !LMMESTOREUserBanned(ply) then	
-		LMMESTOREdb:Query("UPDATE weapons SET price = "..price..", description = '"..desc.."' WHERE id = "..id.." AND seller = "..ply:SteamID64(), function(result)
-			if result[1].status == false then
-				PrintTable(result)
-			else
-				net.Start("LMMESTORENotify")
-					net.WriteString("The price and description has been changed!")
-				net.Send(ply)
-			end
-		end)
+	if !LMMESTOREUserBanned(ply) then
+		if price > 0 then
+			LMMESTOREdb:Query("UPDATE weapons SET price = "..price..", description = '"..desc.."' WHERE id = "..id.." AND seller = "..ply:SteamID64(), function(result)
+				if result[1].status == false then
+					PrintTable(result)
+				else
+					net.Start("LMMESTORENotify")
+						net.WriteString("The price and description has been changed!")
+					net.Send(ply)
+				end
+			end)
+		end
 	end
 end)
 
@@ -622,15 +626,17 @@ net.Receive("LMMESTOREChangeAmmoPD", function(len, ply)
 	local desc = net.ReadString()
 	
 	if !LMMESTOREUserBanned(ply) then	
-		LMMESTOREdb:Query("UPDATE ammo SET price = "..price..", description = '"..desc.."' WHERE id = "..id.." AND seller = "..ply:SteamID64(), function(result)
-			if result[1].status == false then
-				PrintTable(result)
-			else
-				net.Start("LMMESTORENotify")
-					net.WriteString("The price and description has been changed!")
-				net.Send(ply)
-			end
-		end)
+		if price > 0 then
+			LMMESTOREdb:Query("UPDATE ammo SET price = "..price..", description = '"..desc.."' WHERE id = "..id.." AND seller = "..ply:SteamID64(), function(result)
+				if result[1].status == false then
+					PrintTable(result)
+				else
+					net.Start("LMMESTORENotify")
+						net.WriteString("The price and description has been changed!")
+					net.Send(ply)
+				end
+			end)		
+		end	
 	end
 end)
 
