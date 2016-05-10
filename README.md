@@ -1,5 +1,7 @@
 Wiki: https://github.com/XxLMM13xXgaming/lmm_estore/wiki
 
+Facepunch: https://facepunch.com/showthread.php?t=1517074
+
 To setup please make sure you have tmysql4 installed link is found below
 
 Open the lmm_estore_mysql_config.lua file and fill out everything correctly...
