@@ -1,6 +1,6 @@
 require( "tmysql4" ) 
 --[[You really should not edit this!]]--
-local version = "betaV1.2" -- DO NOT EDIT THIS!
+local version = "1.0" -- DO NOT EDIT THIS!
 local version_url = "https://gist.githubusercontent.com/XxLMM13xXgaming/c761d31a8358565bc758c28b4972ce77/raw/LMMESTORE" -- DO NOT EDIT THIS!
 local update_url = "https://github.com/XxLMM13xXgaming/lmm_estore" -- DO NOT EDIT THIS!
 local update_ur = "https://gist.githubusercontent.com/XxLMM13xXgaming/c89c161d6424d456acbe0e68cc276384/raw/LMMESTORE%2520UR" -- DO NOT EDIT THIS!
@@ -9,7 +9,7 @@ local ranksthatgetnotify = { "superadmin", "owner", "admin" } -- DO NOT EDIT THI
 local addon_id = "LMMESTORE" -- DO NOT EDIT THIS
 local addon_name = "eStore" -- DO NOT EDIT THIS
   
-if (SERVER) then 
+if (SERVER) then  
 
 	AddCSLuaFile("lmm_estore_config.lua")
 	include("lmm_estore_config.lua")
@@ -32,7 +32,7 @@ if (SERVER) then
 	if LMMESTOREerr != nil or tostring( type( LMMESTOREdb ) ) == "boolean" then
 		MsgC( Color(255,0,0), "[eStore] Error connecting to the database!\n" )
 		MsgC( Color(255,0,0), "[eStore] MySQL Error: " .. LMMESTOREerr.."\n")
-	else
+	else 
 		MsgC(Color(0,255,0), "[eStore] Connected to the database!\n")
 	end
 	----------------------------------------------------------------------------
@@ -149,7 +149,12 @@ ALTER TABLE `subscriptions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=9;
 
 ALTER TABLE `weapons`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=32;]]
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=32;
+
+INSERT INTO `players` (`id`, `player`, `earned`, `spent`, `unclaimed`) VALUES
+(1, 'server', '0', '0', '0');  
+  
+ ]]
 	
 	LMMESTOREdb:Query( LMMESTORESQLCreateTables, function(result)
 		if result[1].status == false then

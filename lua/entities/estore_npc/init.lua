@@ -95,8 +95,6 @@ net.Receive("LMMESTOREPickupAmmo", function(len, ply)
 			count = tonumber(result[1].data[1].count)
 			class = result[1].data[1].weapon
 			model = result[1].data[1].model
-
-			local weapon = ents.Create(class)
 			
 			ply:GiveAmmo( count, class, true )
 			
@@ -119,7 +117,10 @@ function LMMESTOREOpeneStoreDMANOpen(ply, seller)
 		LMMESTOREdb:Query("SELECT * FROM pickup", function(result)
 			for i=1, #result[1].data do
 				if result[1].data[i].type == "shipment" then
-					if LMMESTOREGetUserBySteamID(result[1].data[i].seller) != nil then
+					if result[1].data[i].seller == "server" then
+						seller = "server"
+						sellerhere = false
+					elseif LMMESTOREGetUserBySteamID(result[1].data[i].seller) != nil then
 						seller = LMMESTOREGetUserBySteamID(result[1].data[i].seller)
 						sellerhere = true
 					else
@@ -137,8 +138,10 @@ function LMMESTOREOpeneStoreDMANOpen(ply, seller)
 						table.insert( thetableshipments, {seller, sellerhere, count, weapon, model, string.sub(desc, 1, 63).."...", price, id} )
 					end
 				elseif result[1].data[i].type == "weapon" then
-					print("weapon")				
-					if LMMESTOREGetUserBySteamID(result[1].data[i].seller) != nil then
+					if result[1].data[i].seller == "server" then
+						seller = "server"
+						sellerhere = false
+					elseif LMMESTOREGetUserBySteamID(result[1].data[i].seller) != nil then
 						seller = LMMESTOREGetUserBySteamID(result[1].data[i].seller)
 						sellerhere = true
 					else
@@ -155,7 +158,10 @@ function LMMESTOREOpeneStoreDMANOpen(ply, seller)
 						table.insert( thetableweapons, {seller, sellerhere, weapon, model, string.sub(desc, 1, 63).."...", price, id} )
 					end				
 				elseif result[1].data[i].type == "ammo" then
-					if LMMESTOREGetUserBySteamID(result[1].data[i].seller) != nil then
+					if result[1].data[i].seller == "server" then
+						seller = "server"
+						sellerhere = false
+					elseif LMMESTOREGetUserBySteamID(result[1].data[i].seller) != nil then
 						seller = LMMESTOREGetUserBySteamID(result[1].data[i].seller)
 						sellerhere = true
 					else

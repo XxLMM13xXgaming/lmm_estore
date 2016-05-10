@@ -1,42 +1,33 @@
 include("lmm_estore_config.lua")
-
-surface.CreateFont( "fontclose", {
-	font = "Lato Light",
-	size = 25,
-	weight = 250,
-	antialias = true,
-	strikeout = false,
-	additive = true,
-} )
- 
+  
 surface.CreateFont( "LMMESTORETitleFont", {
+	font = "Arial",
+	size = 20,
+	weight = 5000,
+	blursize = 0,
+	scanlines = 0,
+	antialias = true,
+}) 
+ 
+surface.CreateFont( "LMMESTORELabelSmall", {
+	font = "Arial",
+	size = 25,
+	weight = 2000,
+	blursize = 0,
+	scanlines = 0,
+	antialias = true,
+}) 
+ 
+surface.CreateFont( "LMMESTORENoFont", {
 	font = "Lato Light",
-	size = 30,
+	size = 40,
 	weight = 250,
 	antialias = true,
 	strikeout = false,
 	additive = true,
 } )
  
-surface.CreateFont( "LMMESTORENameFont", {
-	font = "Lato Light",
-	size = 46,
-	weight = 250,
-	antialias = true,
-	strikeout = false,
-	additive = true,
-} )
- 
-surface.CreateFont( "LMMESTORENameFontSmall", {
-	font = "Lato Light",
-	size = 34,
-	weight = 250,
-	antialias = true,
-	strikeout = false,
-	additive = true,
-} )
- 
-surface.CreateFont( "LMMESTOREJobFont", {
+surface.CreateFont( "LMMESTORESellLabel", {
 	font = "Lato Light",
 	size = 20,
 	weight = 250,
@@ -44,6 +35,15 @@ surface.CreateFont( "LMMESTOREJobFont", {
 	strikeout = false,
 	additive = true,
 } )
+
+surface.CreateFont( "LMMESTOREfontclose", {
+	font = "Arial",
+	size = 18,
+	weight = 5000,
+	blursize = 0,
+	scanlines = 0,
+	antialias = true,
+})
  
 local blur = Material("pp/blurscreen")
 local function DrawBlur(panel, amount) --Panel blur function
@@ -69,32 +69,37 @@ net.Receive("LMMESTOREOpenDashbord", function()
 
 	local function MoreInfoF()
 		local DFrame = vgui.Create( "DFrame" )
-		DFrame:SetSize( 300, 250 )
+		DFrame:SetSize( 400, 400 )
 		DFrame:Center()
 		DFrame:SetDraggable( true )
 		DFrame:MakePopup()
 		DFrame:SetTitle( "" )
 		DFrame:ShowCloseButton( false )
 		DFrame.Paint = function( self, w, h )
-			DrawBlur(DFrame, 2)
-			drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-			draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 85))
---			drawRectOutline( 2, 2, w - 4, h / 5.9, Color( 0, 0, 0, 85 ) )
---			draw.RoundedBox(0, 2, 2, w - 4, h / 6, Color(0,0,0,125))
---			draw.SimpleText( "eStore More Info", "LMMESTORETitleFont", DFrame:GetWide() / 2, 25, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.RoundedBox(2, 0, 0, DFrame:GetWide(), DFrame:GetTall(), Color(35, 35, 35, 250))
+			draw.RoundedBox(2, 0, 0, DFrame:GetWide(), 30, Color(40, 40, 40, 255))
+			draw.SimpleText( "More Info", "LMMESTORETitleFont", DFrame:GetWide() / 2, 15, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)			
 		end
-		
-		local frameclose = vgui.Create( "DButton", DFrame )
-		frameclose:SetSize( 35, 35 )
-		frameclose:SetPos( DFrame:GetWide() - 36,1 )
-		frameclose:SetText( "X" )
-		frameclose:SetFont( "fontclose" )
-		frameclose:SetTextColor( Color( 255, 255, 255 ) )
-		frameclose.Paint = function()
-			
-		end	
+
+		local frameclose = vgui.Create("DButton", DFrame)
+		frameclose:SetSize(20, 20)
+		frameclose:SetPos(DFrame:GetWide() - frameclose:GetWide() - 3, 3)
+		frameclose:SetText("X");
+		frameclose:SetTextColor(Color(0,0,0,255))		
+		frameclose:SetFont("LMMESTOREfontclose")
+		frameclose.hover = false
 		frameclose.DoClick = function()
 			DFrame:Close()
+		end
+		frameclose.OnCursorEntered = function(self)
+			self.hover = true
+		end
+		frameclose.OnCursorExited = function(self)
+			self.hover = false
+		end
+		function frameclose:Paint(w, h)	
+			draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(255,15,15,250)) or Color(255,255,255,255)) -- Paints on hover
+			frameclose:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
 		end
 		
 		local richtext = vgui.Create( "RichText", DFrame )
@@ -108,48 +113,77 @@ net.Receive("LMMESTOREOpenDashbord", function()
 		richtext:AppendText( LMMESTOREConfig.MoreInfoText )
 		richtext:InsertColorChange( 255, 64, 64, 255 )
 		richtext:AppendText( "This addon was made by XxLMM13xXgaming!" )		
+
+		local DashbordB = vgui.Create( "DButton", DFrame )
+		DashbordB:SetPos( 10, 370 )
+		DashbordB:SetSize( DFrame:GetWide() - 20,20 )
+		DashbordB:SetText( "Dashboard" )
+		DashbordB.OnCursorEntered = function(self)
+			self.hover = true
+		end
+		DashbordB.OnCursorExited = function(self)
+			self.hover = false
+		end	
+		DashbordB.Paint = function( self, w, h )		
+			draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(0,160,255,250)) or Color(255,255,255,255)) -- Paints on hover
+			DashbordB:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
+		end
+		DashbordB.DoClick = function()
+			net.Start("LMMESTOREOpenTheDashbord")
+			net.SendToServer()
+			DFrame:Close()
+		end
+
 		
 	end
 
 	local DFrame = vgui.Create( "DFrame" )
-	DFrame:SetSize( 300, 185 )
+	DFrame:SetSize( 300, 150 )
 	DFrame:Center()
 	DFrame:SetDraggable( true )
 	DFrame:MakePopup()
 	DFrame:SetTitle( "" )
 	DFrame:ShowCloseButton( false )
 	DFrame.Paint = function( self, w, h )
-		DrawBlur(DFrame, 2)
-		drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-		draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 85))
-		drawRectOutline( 2, 2, w - 4, h / 3.9, Color( 0, 0, 0, 85 ) )
-		draw.RoundedBox(0, 2, 2, w - 4, h / 4, Color(0,0,0,125))
-		draw.SimpleText( "eStore Dashbord", "LMMESTORETitleFont", DFrame:GetWide() / 2, 25, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.RoundedBox(2, 0, 0, DFrame:GetWide(), DFrame:GetTall(), Color(35, 35, 35, 250))
+		draw.RoundedBox(2, 0, 0, DFrame:GetWide(), 30, Color(40, 40, 40, 255))
+		draw.SimpleText( "eStore Dashboard", "LMMESTORETitleFont", DFrame:GetWide() / 2, 15, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 	
-	local frameclose = vgui.Create( "DButton", DFrame )
-	frameclose:SetSize( 35, 35 )
-	frameclose:SetPos( DFrame:GetWide() - 36,9 )
-	frameclose:SetText( "X" )
-	frameclose:SetFont( "fontclose" )
-	frameclose:SetTextColor( Color( 255, 255, 255 ) )
-	frameclose.Paint = function()
-		
-	end
+	local frameclose = vgui.Create("DButton", DFrame)
+	frameclose:SetSize(20, 20)
+	frameclose:SetPos(DFrame:GetWide() - frameclose:GetWide() - 3, 3)
+	frameclose:SetText("X");
+	frameclose:SetTextColor(Color(0,0,0,255))	
+	frameclose:SetFont("LMMESTOREfontclose")
+	frameclose.hover = false	
 	frameclose.DoClick = function()
 		DFrame:Close()
-		DFrame:Remove()
+	end
+	frameclose.OnCursorEntered = function(self)
+		self.hover = true
+	end
+	frameclose.OnCursorExited = function(self)
+		self.hover = false
+	end
+	function frameclose:Paint(w, h)	
+		draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(255,15,15,250)) or Color(255,255,255,255)) -- Paints on hover
+		frameclose:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
 	end
 
 	local GoToShop = vgui.Create( "DButton", DFrame )
-	GoToShop:SetPos( 5, 70 )
+	GoToShop:SetPos( 5, 40 )
 	GoToShop:SetSize( DFrame:GetWide() - 10,20 )
 	GoToShop:SetText( "Go to the eStore" )
-	GoToShop:SetTextColor( Color( 255, 255, 255 ) )	
+	GoToShop.OnCursorEntered = function(self)
+		self.hover = true
+	end
+	GoToShop.OnCursorExited = function(self)
+		self.hover = false
+	end	
 	GoToShop.Paint = function( self, w, h )		
-		DrawBlur(GoToShop, 2)
-		drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-		draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))
+		draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(0,160,255,250)) or Color(255,255,255,255)) -- Paints on hover
+		GoToShop:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
 	end
 	GoToShop.DoClick = function()
 		net.Start("LMMESTOREOpenShop")
@@ -158,14 +192,18 @@ net.Receive("LMMESTOREOpenDashbord", function()
 	end	
 	
 	local ManageSelling = vgui.Create( "DButton", DFrame )
-	ManageSelling:SetPos( 5, 95 )
+	ManageSelling:SetPos( 5, 65 )
 	ManageSelling:SetSize( DFrame:GetWide() - 10,20 )
 	ManageSelling:SetText( "Manage my items" )
-	ManageSelling:SetTextColor( Color( 255, 255, 255 ) )	
+	ManageSelling.OnCursorEntered = function(self)
+		self.hover = true
+	end
+	ManageSelling.OnCursorExited = function(self)
+		self.hover = false
+	end	
 	ManageSelling.Paint = function( self, w, h )		
-		DrawBlur(ManageSelling, 2)
-		drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-		draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))
+		draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(0,160,255,250)) or Color(255,255,255,255)) -- Paints on hover
+		ManageSelling:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
 	end
 	ManageSelling.DoClick = function()
 		net.Start("LMMESTOREOpenItems")
@@ -174,14 +212,18 @@ net.Receive("LMMESTOREOpenDashbord", function()
 	end			
 
 	local MyProfile = vgui.Create( "DButton", DFrame )
-	MyProfile:SetPos( 5, 120 )
+	MyProfile:SetPos( 5, 90 )
 	MyProfile:SetSize( DFrame:GetWide() - 10,20 )
 	MyProfile:SetText( "My profile" )
-	MyProfile:SetTextColor( Color( 255, 255, 255 ) )	
+	MyProfile.OnCursorEntered = function(self)
+		self.hover = true
+	end
+	MyProfile.OnCursorExited = function(self)
+		self.hover = false
+	end	
 	MyProfile.Paint = function( self, w, h )		
-		DrawBlur(MyProfile, 2)
-		drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-		draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))
+		draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(0,160,255,250)) or Color(255,255,255,255)) -- Paints on hover
+		MyProfile:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
 	end
 	MyProfile.DoClick = function()
 		net.Start("LMMESTOREOpenProfile")
@@ -190,14 +232,18 @@ net.Receive("LMMESTOREOpenDashbord", function()
 	end
 
 	local MoreInfo = vgui.Create( "DButton", DFrame )
-	MoreInfo:SetPos( 5, 145 )
+	MoreInfo:SetPos( 5, 115 )
 	MoreInfo:SetSize( DFrame:GetWide() - 10,20 )
 	MoreInfo:SetText( "More info" )
-	MoreInfo:SetTextColor( Color( 255, 255, 255 ) )	
+	MoreInfo.OnCursorEntered = function(self)
+		self.hover = true
+	end
+	MoreInfo.OnCursorExited = function(self)
+		self.hover = false
+	end	
 	MoreInfo.Paint = function( self, w, h )		
-		DrawBlur(MoreInfo, 2)
-		drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-		draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))
+		draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(0,160,255,250)) or Color(255,255,255,255)) -- Paints on hover
+		MoreInfo:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
 	end
 	MoreInfo.DoClick = function()
 		MoreInfoF()
@@ -225,82 +271,91 @@ net.Receive("LMMESTOREOpenTheProfile", function()
 	end
 	
 	local DFrame = vgui.Create( "DFrame" )
-	DFrame:SetSize( 360, 280 )
+	DFrame:SetSize( 360, 225 )
 	DFrame:Center()
 	DFrame:SetDraggable( true )
 	DFrame:MakePopup()
 	DFrame:SetTitle( "" )
 	DFrame:ShowCloseButton( false )
 	DFrame.Paint = function( self, w, h )
-		DrawBlur(DFrame, 2)
-		drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-		draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 85))
-		drawRectOutline( 2, 2, w - 4, h / 5.9, Color( 0, 0, 0, 85 ) )
-		draw.RoundedBox(0, 2, 2, w - 4, h / 6, Color(0,0,0,125))
-		draw.SimpleText( "eStore Profile", "LMMESTORETitleFont", DFrame:GetWide() / 2, 25, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.RoundedBox(2, 0, 0, DFrame:GetWide(), DFrame:GetTall(), Color(35, 35, 35, 250))
+		draw.RoundedBox(2, 0, 0, DFrame:GetWide(), 30, Color(40, 40, 40, 255))
+		draw.SimpleText( "eStore Profile", "LMMESTORETitleFont", DFrame:GetWide() / 2, 15, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 	
-	local frameclose = vgui.Create( "DButton", DFrame )
-	frameclose:SetSize( 35, 35 )
-	frameclose:SetPos( DFrame:GetWide() - 36,9 )
-	frameclose:SetText( "X" )
-	frameclose:SetFont( "fontclose" )
-	frameclose:SetTextColor( Color( 255, 255, 255 ) )
-	frameclose.Paint = function()
-		
-	end
+	local frameclose = vgui.Create("DButton", DFrame)
+	frameclose:SetSize(20, 20)
+	frameclose:SetPos(DFrame:GetWide() - frameclose:GetWide() - 3, 3)
+	frameclose:SetText("X");
+	frameclose:SetTextColor(Color(0,0,0,255))	
+	frameclose:SetFont("LMMESTOREfontclose")
+	frameclose.hover = false	
 	frameclose.DoClick = function()
 		DFrame:Close()
-		DFrame:Remove()
 	end
+	frameclose.OnCursorEntered = function(self)
+		self.hover = true
+	end
+	frameclose.OnCursorExited = function(self)
+		self.hover = false
+	end
+	function frameclose:Paint(w, h)	
+		draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(255,15,15,250)) or Color(255,255,255,255)) -- Paints on hover
+		frameclose:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
+	end
+
 	
 	local ProfitL = vgui.Create("DLabel", DFrame)
 	ProfitL:SetText("Earned: "..DarkRP.formatMoney(profit))
-	ProfitL:SetPos(10, 50)
+	ProfitL:SetPos(10, 30)
 	ProfitL:SetSize(500, 35)
 	ProfitL:SetTextColor(Color(255,255,255))
-	ProfitL:SetFont("LMMESTORENameFontSmall")
+	ProfitL:SetFont("LMMESTORELabelSmall")
 
 	local SpentL = vgui.Create("DLabel", DFrame)
 	SpentL:SetText("Spent: "..DarkRP.formatMoney(spent))
-	SpentL:SetPos(10, 85)
+	SpentL:SetPos(10, 55)
 	SpentL:SetSize(500, 35)
 	SpentL:SetTextColor(Color(255,255,255))
-	SpentL:SetFont("LMMESTORENameFontSmall")
+	SpentL:SetFont("LMMESTORELabelSmall")
 
 	local SubL = vgui.Create("DLabel", DFrame)
 	SubL:SetText("Subscription: "..sub)
-	SubL:SetPos(10, 120)
+	SubL:SetPos(10, 80)
 	SubL:SetSize(500, 35)
 	SubL:SetTextColor(Color(255,255,255))
-	SubL:SetFont("LMMESTORENameFontSmall")
+	SubL:SetFont("LMMESTORELabelSmall")
 
 	if subbool then
 		local SubEL = vgui.Create("DLabel", DFrame)
 		SubEL:SetText("Expires: "..expirestring)
-		SubEL:SetPos(10, 155)
+		SubEL:SetPos(10, 105)
 		SubEL:SetSize(500, 35)
 		SubEL:SetTextColor(Color(255,255,255))
-		SubEL:SetFont("LMMESTORENameFontSmall")	
+		SubEL:SetFont("LMMESTORELabelSmall")	
 	else
 		local SubEL = vgui.Create("DLabel", DFrame)
 		SubEL:SetText("Expires: N/A")
-		SubEL:SetPos(10, 155)
+		SubEL:SetPos(10, 105)
 		SubEL:SetSize(500, 35)
 		SubEL:SetTextColor(Color(255,255,255))
-		SubEL:SetFont("LMMESTORENameFontSmall")		
+		SubEL:SetFont("LMMESTORELabelSmall")		
 	end
 	
 	
 	local BRSubB = vgui.Create( "DButton", DFrame )
-	BRSubB:SetPos( 10, 200 )
+	BRSubB:SetPos( 10, 140 )
 	BRSubB:SetSize( DFrame:GetWide() - 20,20 )
 	BRSubB:SetText( "Buy/Review eStore Subscription" )
-	BRSubB:SetTextColor( Color( 255, 255, 255 ) )	
+	BRSubB.OnCursorEntered = function(self)
+		self.hover = true
+	end
+	BRSubB.OnCursorExited = function(self)
+		self.hover = false
+	end	
 	BRSubB.Paint = function( self, w, h )		
-		DrawBlur(BRSubB, 2)
-		drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-		draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))
+		draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(0,160,255,250)) or Color(255,255,255,255)) -- Paints on hover
+		BRSubB:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
 	end
 	BRSubB.DoClick = function()
 		if LocalPlayer():getDarkRPVar("money") >= LMMESTOREConfig.RenewBuySub then
@@ -322,14 +377,18 @@ net.Receive("LMMESTOREOpenTheProfile", function()
 	end
 
 	local ClaimMoney = vgui.Create( "DButton", DFrame )
-	ClaimMoney:SetPos( 10, 225 )
+	ClaimMoney:SetPos( 10, 165 )
 	ClaimMoney:SetSize( DFrame:GetWide() - 20,20 )
 	ClaimMoney:SetText( "Claim money ("..DarkRP.formatMoney(unclaimed)..")" )
-	ClaimMoney:SetTextColor( Color( 255, 255, 255 ) )	
+	ClaimMoney.OnCursorEntered = function(self)
+		self.hover = true
+	end
+	ClaimMoney.OnCursorExited = function(self)
+		self.hover = false
+	end	
 	ClaimMoney.Paint = function( self, w, h )		
-		DrawBlur(ClaimMoney, 2)
-		drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-		draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))
+		draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(0,160,255,250)) or Color(255,255,255,255)) -- Paints on hover
+		ClaimMoney:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
 	end
 	ClaimMoney.DoClick = function()
 		net.Start("LMMESTOREClaimMoney")
@@ -338,14 +397,18 @@ net.Receive("LMMESTOREOpenTheProfile", function()
 	end
 	
 	local DashbordB = vgui.Create( "DButton", DFrame )
-	DashbordB:SetPos( 10, 250 )
+	DashbordB:SetPos( 10, 190 )
 	DashbordB:SetSize( DFrame:GetWide() - 20,20 )
-	DashbordB:SetText( "Dashbord" )
-	DashbordB:SetTextColor( Color( 255, 255, 255 ) )	
+	DashbordB:SetText( "Dashboard" )
+	DashbordB.OnCursorEntered = function(self)
+		self.hover = true
+	end
+	DashbordB.OnCursorExited = function(self)
+		self.hover = false
+	end	
 	DashbordB.Paint = function( self, w, h )		
-		DrawBlur(DashbordB, 2)
-		drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-		draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))
+		draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(0,160,255,250)) or Color(255,255,255,255)) -- Paints on hover
+		DashbordB:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
 	end
 	DashbordB.DoClick = function()
 		net.Start("LMMESTOREOpenTheDashbord")
@@ -365,45 +428,50 @@ net.Receive("LMMESTORESellingItem", function()
 		local self = net.ReadEntity()
 		
 		local DFrame = vgui.Create( "DFrame" )
-		DFrame:SetSize( 300, 410 )
+		DFrame:SetSize( 300, 350 )
 		DFrame:Center()
 		DFrame:SetDraggable( true )
 		DFrame:MakePopup()
 		DFrame:SetTitle( "" )
 		DFrame:ShowCloseButton( false )
 		DFrame.Paint = function( self, w, h )
-			DrawBlur(DFrame, 2)
-			drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-			draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 85))
-			drawRectOutline( 2, 2, w - 4, h / 8.9, Color( 0, 0, 0, 85 ) )
-			draw.RoundedBox(0, 2, 2, w - 4, h / 9, Color(0,0,0,125))
-			draw.SimpleText( "Sell Shipment("..count..")", "LMMESTORETitleFont", DFrame:GetWide() / 2, 25, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.RoundedBox(2, 0, 0, DFrame:GetWide(), DFrame:GetTall(), Color(35, 35, 35, 250))
+			draw.RoundedBox(2, 0, 0, DFrame:GetWide(), 30, Color(40, 40, 40, 255))
+			draw.SimpleText( "Sell Shipment("..count..")", "LMMESTORETitleFont", DFrame:GetWide() / 2, 15, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		end
 		
-		local frameclose = vgui.Create( "DButton", DFrame )
-		frameclose:SetSize( 35, 35 )
-		frameclose:SetPos( DFrame:GetWide() - 36,9 )
-		frameclose:SetText( "X" )
-		frameclose:SetFont( "fontclose" )
-		frameclose:SetTextColor( Color( 255, 255, 255 ) )
-		frameclose.Paint = function()
-			
-		end
+		local frameclose = vgui.Create("DButton", DFrame)
+		frameclose:SetSize(20, 20)
+		frameclose:SetPos(DFrame:GetWide() - frameclose:GetWide() - 3, 3)
+		frameclose:SetText("X");
+		frameclose:SetTextColor(Color(0,0,0,255))		
+		frameclose:SetFont("LMMESTOREfontclose")
+		frameclose.hover = false
 		frameclose.DoClick = function()
 			DFrame:Close()
-			DFrame:Remove()
 		end
+		frameclose.OnCursorEntered = function(self)
+			self.hover = true
+		end
+		frameclose.OnCursorExited = function(self)
+			self.hover = false
+		end
+		function frameclose:Paint(w, h)	
+			draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(255,15,15,250)) or Color(255,255,255,255)) -- Paints on hover
+			frameclose:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
+		end
+
 		
 		local TextEntry = vgui.Create( "DTextEntry", DFrame )
-		TextEntry:SetPos( 5, 65 )
+		TextEntry:SetPos( 5, 40 )
 		TextEntry:SetSize( DFrame:GetWide() - 10, 20 )
 		TextEntry:SetText( "Short Description" )
 		TextEntry.OnEnter = function( self )
 
 		end	
-
+		
 		local TextEntry2 = vgui.Create( "DTextEntry", DFrame )
-		TextEntry2:SetPos( 5, 100 )
+		TextEntry2:SetPos( 5, 65 )
 		TextEntry2:SetSize( DFrame:GetWide() - 10, 20 )
 		TextEntry2:SetText( "Price" )
 		TextEntry2.OnEnter = function( self )
@@ -411,7 +479,7 @@ net.Receive("LMMESTORESellingItem", function()
 		end	
 
 		icon = vgui.Create("DModelPanel" , DFrame )
-		icon:SetPos( 5, 135 )
+		icon:SetPos( 5, 90 )
 		icon:SetSize( DFrame:GetWide() - 10, 200 )		
 		icon:SetModel(model)
 		local min, max = icon.Entity:GetRenderBounds()
@@ -419,14 +487,18 @@ net.Receive("LMMESTORESellingItem", function()
 		icon:SetLookAt((max + min) / 2)
 		
 		local submittButton = vgui.Create( "DButton", DFrame )
-		submittButton:SetPos( 5, 380 )
+		submittButton:SetPos( 5, 320 )
 		submittButton:SetSize( DFrame:GetWide() - 10,20 )
 		submittButton:SetText( "Sell item" )
-		submittButton:SetTextColor( Color( 255, 255, 255 ) )	
+		submittButton.OnCursorEntered = function(self)
+			self.hover = true
+		end
+		submittButton.OnCursorExited = function(self)
+			self.hover = false
+		end	
 		submittButton.Paint = function( self, w, h )		
-			DrawBlur(submittButton, 2)
-			drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-			draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))
+			draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(0,160,255,250)) or Color(255,255,255,255)) -- Paints on hover
+			submittButton:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
 		end
 		submittButton.DoClick = function()
 			if isnumber(tonumber(TextEntry2:GetValue())) then
@@ -453,37 +525,41 @@ net.Receive("LMMESTORESellingItem", function()
 		local self = net.ReadEntity()
 
 		local DFrame = vgui.Create( "DFrame" )
-		DFrame:SetSize( 300, 410 )
+		DFrame:SetSize( 300, 350 )
 		DFrame:Center()
 		DFrame:SetDraggable( true )
 		DFrame:MakePopup()
 		DFrame:SetTitle( "" )
 		DFrame:ShowCloseButton( false )
 		DFrame.Paint = function( self, w, h )
-			DrawBlur(DFrame, 2)
-			drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-			draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 85))
-			drawRectOutline( 2, 2, w - 4, h / 8.9, Color( 0, 0, 0, 85 ) )
-			draw.RoundedBox(0, 2, 2, w - 4, h / 9, Color(0,0,0,125))
-			draw.SimpleText( "Sell Weapon", "LMMESTORETitleFont", DFrame:GetWide() / 2, 25, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.RoundedBox(2, 0, 0, DFrame:GetWide(), DFrame:GetTall(), Color(35, 35, 35, 250))
+			draw.RoundedBox(2, 0, 0, DFrame:GetWide(), 30, Color(40, 40, 40, 255))
+			draw.SimpleText( "Sell Weapon", "LMMESTORETitleFont", DFrame:GetWide() / 2, 15, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		end
 		
-		local frameclose = vgui.Create( "DButton", DFrame )
-		frameclose:SetSize( 35, 35 )
-		frameclose:SetPos( DFrame:GetWide() - 36,9 )
-		frameclose:SetText( "X" )
-		frameclose:SetFont( "fontclose" )
-		frameclose:SetTextColor( Color( 255, 255, 255 ) )
-		frameclose.Paint = function()
-			
-		end
+		local frameclose = vgui.Create("DButton", DFrame)
+		frameclose:SetSize(20, 20)
+		frameclose:SetPos(DFrame:GetWide() - frameclose:GetWide() - 3, 3)
+		frameclose:SetText("X");
+		frameclose:SetTextColor(Color(0,0,0,255))		
+		frameclose:SetFont("LMMESTOREfontclose")
+		frameclose.hover = false		
 		frameclose.DoClick = function()
 			DFrame:Close()
-			DFrame:Remove()
+		end
+		frameclose.OnCursorEntered = function(self)
+			self.hover = true
+		end
+		frameclose.OnCursorExited = function(self)
+			self.hover = false
+		end
+		function frameclose:Paint(w, h)	
+			draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(255,15,15,250)) or Color(255,255,255,255)) -- Paints on hover
+			frameclose:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
 		end
 		
 		local TextEntry = vgui.Create( "DTextEntry", DFrame )
-		TextEntry:SetPos( 5, 65 )
+		TextEntry:SetPos( 5, 40 )
 		TextEntry:SetSize( DFrame:GetWide() - 10, 20 )
 		TextEntry:SetText( "Short Description" )
 		TextEntry.OnEnter = function( self )
@@ -491,7 +567,7 @@ net.Receive("LMMESTORESellingItem", function()
 		end	
 
 		local TextEntry2 = vgui.Create( "DTextEntry", DFrame )
-		TextEntry2:SetPos( 5, 100 )
+		TextEntry2:SetPos( 5, 65 )
 		TextEntry2:SetSize( DFrame:GetWide() - 10, 20 )
 		TextEntry2:SetText( "Price" )
 		TextEntry2.OnEnter = function( self )
@@ -499,7 +575,7 @@ net.Receive("LMMESTORESellingItem", function()
 		end	
 
 		icon = vgui.Create("DModelPanel" , DFrame )
-		icon:SetPos( 5, 135 )
+		icon:SetPos( 5, 90 )
 		icon:SetSize( DFrame:GetWide() - 10, 200 )		
 		icon:SetModel(model)
 		local min, max = icon.Entity:GetRenderBounds()
@@ -507,14 +583,18 @@ net.Receive("LMMESTORESellingItem", function()
 		icon:SetLookAt((max + min) / 2)
 		
 		local submittButton = vgui.Create( "DButton", DFrame )
-		submittButton:SetPos( 5, 380 )
+		submittButton:SetPos( 5, 320 )
 		submittButton:SetSize( DFrame:GetWide() - 10,20 )
 		submittButton:SetText( "Sell item" )
-		submittButton:SetTextColor( Color( 255, 255, 255 ) )	
+		submittButton.OnCursorEntered = function(self)
+			self.hover = true
+		end
+		submittButton.OnCursorExited = function(self)
+			self.hover = false
+		end	
 		submittButton.Paint = function( self, w, h )		
-			DrawBlur(submittButton, 2)
-			drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-			draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))
+			draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(0,160,255,250)) or Color(255,255,255,255)) -- Paints on hover
+			submittButton:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
 		end
 		submittButton.DoClick = function()
 			if isnumber(tonumber(TextEntry2:GetValue())) then
@@ -541,37 +621,42 @@ net.Receive("LMMESTORESellingItem", function()
 		local self = net.ReadEntity()		
 		
 		local DFrame = vgui.Create( "DFrame" )
-		DFrame:SetSize( 300, 410 )
+		DFrame:SetSize( 300, 350 )
 		DFrame:Center()
 		DFrame:SetDraggable( true )
 		DFrame:MakePopup()
 		DFrame:SetTitle( "" )
 		DFrame:ShowCloseButton( false )
 		DFrame.Paint = function( self, w, h )
-			DrawBlur(DFrame, 2)
-			drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-			draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 85))
-			drawRectOutline( 2, 2, w - 4, h / 8.9, Color( 0, 0, 0, 85 ) )
-			draw.RoundedBox(0, 2, 2, w - 4, h / 9, Color(0,0,0,125))
-			draw.SimpleText( "Sell Ammo("..count..")", "LMMESTORETitleFont", DFrame:GetWide() / 2, 25, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.RoundedBox(2, 0, 0, DFrame:GetWide(), DFrame:GetTall(), Color(35, 35, 35, 250))
+			draw.RoundedBox(2, 0, 0, DFrame:GetWide(), 30, Color(40, 40, 40, 255))
+			draw.SimpleText( "Sell Ammo("..count..")", "LMMESTORETitleFont", DFrame:GetWide() / 2, 15, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		end
 		
-		local frameclose = vgui.Create( "DButton", DFrame )
-		frameclose:SetSize( 35, 35 )
-		frameclose:SetPos( DFrame:GetWide() - 36,9 )
-		frameclose:SetText( "X" )
-		frameclose:SetFont( "fontclose" )
-		frameclose:SetTextColor( Color( 255, 255, 255 ) )
-		frameclose.Paint = function()
-			
-		end
+		local frameclose = vgui.Create("DButton", DFrame)
+		frameclose:SetSize(20, 20)
+		frameclose:SetPos(DFrame:GetWide() - frameclose:GetWide() - 3, 3)
+		frameclose:SetText("X");
+		frameclose:SetTextColor(Color(0,0,0,255))		
+		frameclose:SetFont("LMMESTOREfontclose")
+		frameclose.hover = false	
 		frameclose.DoClick = function()
 			DFrame:Close()
-			DFrame:Remove()
 		end
+		frameclose.OnCursorEntered = function(self)
+			self.hover = true
+		end
+		frameclose.OnCursorExited = function(self)
+			self.hover = false
+		end
+		function frameclose:Paint(w, h)	
+			draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(255,15,15,250)) or Color(255,255,255,255)) -- Paints on hover
+			frameclose:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
+		end
+
 		
 		local TextEntry = vgui.Create( "DTextEntry", DFrame )
-		TextEntry:SetPos( 5, 65 )
+		TextEntry:SetPos( 5, 40 )
 		TextEntry:SetSize( DFrame:GetWide() - 10, 20 )
 		TextEntry:SetText( "Short Description" )
 		TextEntry.OnEnter = function( self )
@@ -579,7 +664,7 @@ net.Receive("LMMESTORESellingItem", function()
 		end	
 
 		local TextEntry2 = vgui.Create( "DTextEntry", DFrame )
-		TextEntry2:SetPos( 5, 100 )
+		TextEntry2:SetPos( 5, 65 )
 		TextEntry2:SetSize( DFrame:GetWide() - 10, 20 )
 		TextEntry2:SetText( "Price" )
 		TextEntry2.OnEnter = function( self )
@@ -587,7 +672,7 @@ net.Receive("LMMESTORESellingItem", function()
 		end	
 
 		icon = vgui.Create("DModelPanel" , DFrame )
-		icon:SetPos( 5, 135 )
+		icon:SetPos( 5, 90 )
 		icon:SetSize( DFrame:GetWide() - 10, 200 )		
 		icon:SetModel(model)
 		local min, max = icon.Entity:GetRenderBounds()
@@ -595,14 +680,18 @@ net.Receive("LMMESTORESellingItem", function()
 		icon:SetLookAt((max + min) / 2)
 		
 		local submittButton = vgui.Create( "DButton", DFrame )
-		submittButton:SetPos( 5, 380 )
+		submittButton:SetPos( 5, 320 )
 		submittButton:SetSize( DFrame:GetWide() - 10,20 )
 		submittButton:SetText( "Sell item" )
-		submittButton:SetTextColor( Color( 255, 255, 255 ) )	
+		submittButton.OnCursorEntered = function(self)
+			self.hover = true
+		end
+		submittButton.OnCursorExited = function(self)
+			self.hover = false
+		end	
 		submittButton.Paint = function( self, w, h )		
-			DrawBlur(submittButton, 2)
-			drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-			draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))
+			draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(0,160,255,250)) or Color(255,255,255,255)) -- Paints on hover
+			submittButton:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
 		end
 		submittButton.DoClick = function()
 			if isnumber(tonumber(TextEntry2:GetValue())) then
@@ -632,39 +721,44 @@ net.Receive("LMMESTOREOpenManageItems", function()
 	local thetableammo = net.ReadTable()
 
 	local DFrame = vgui.Create( "DFrame" )
-	DFrame:SetSize( 550, 600 )
+	DFrame:SetSize( 550, 580 )
 	DFrame:Center()
 	DFrame:SetDraggable( true )
 	DFrame:MakePopup()
 	DFrame:SetTitle( "" )
 	DFrame:ShowCloseButton( false )
 	DFrame.Paint = function( self, w, h )
-		DrawBlur(DFrame, 2)
-		drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-		draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 85))
-		drawRectOutline( 2, 2, w - 4, h / 12.9, Color( 0, 0, 0, 85 ) )
-		draw.RoundedBox(0, 2, 2, w - 4, h / 13, Color(0,0,0,125))
-		draw.SimpleText( "Manage Items", "LMMESTORETitleFont", DFrame:GetWide() / 2, 25, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.RoundedBox(2, 0, 0, DFrame:GetWide(), DFrame:GetTall(), Color(20, 20, 20, 250))
+		draw.RoundedBox(2, 0, 0, DFrame:GetWide(), 30, Color(40, 40, 40, 255))
+		draw.SimpleText( "Manage Items", "LMMESTORETitleFont", DFrame:GetWide() / 2, 15, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 	
-	local frameclose = vgui.Create( "DButton", DFrame )
-	frameclose:SetSize( 35, 35 )
-	frameclose:SetPos( DFrame:GetWide() - 36,9 )
-	frameclose:SetText( "X" )
-	frameclose:SetFont( "fontclose" )
-	frameclose:SetTextColor( Color( 255, 255, 255 ) )
-	frameclose.Paint = function()
-		
-	end
+	local frameclose = vgui.Create("DButton", DFrame)
+	frameclose:SetSize(20, 20)
+	frameclose:SetPos(DFrame:GetWide() - frameclose:GetWide() - 3, 3)
+	frameclose:SetText("X");
+	frameclose:SetTextColor(Color(0,0,0,255))	
+	frameclose:SetFont("LMMESTOREfontclose")
+	frameclose.hover = false	
 	frameclose.DoClick = function()
 		DFrame:Close()
-		DFrame:Remove()
 	end
+	frameclose.OnCursorEntered = function(self)
+		self.hover = true
+	end
+	frameclose.OnCursorExited = function(self)
+		self.hover = false
+	end
+	function frameclose:Paint(w, h)	
+		draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(255,15,15,250)) or Color(255,255,255,255)) -- Paints on hover
+		frameclose:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
+	end
+
 
 	local function NoItems()
 		local NoItems = vgui.Create( "DLabel", DFrame )
 		NoItems:SetText( "There are no items by you!" )
-		NoItems:SetFont( "LMMESTORENameFont" )
+		NoItems:SetFont( "LMMESTORENoFont" )
 		NoItems:SetTextColor( Color( 200, 200, 200 ) )
 		NoItems:SizeToContents()
 		NoItems:Center()
@@ -672,13 +766,13 @@ net.Receive("LMMESTOREOpenManageItems", function()
 
 	instl = vgui.Create("DLabel", DFrame)
 	instl:SetText("Click on the item you would like to edit!")
-	instl:SetPos(15, 50)
+	instl:SetPos(15, 30)
 	instl:SetSize(500, 30)
 	instl:SetTextColor(Color(255,0,0))
 	
 	local DPanelList = vgui.Create( "DPanelList", DFrame )
-	DPanelList:SetPos( 10, 80 )
-	DPanelList:SetSize( DFrame:GetWide() - 20, DFrame:GetTall() - 130 )
+	DPanelList:SetPos( 10, 60 )
+	DPanelList:SetSize( DFrame:GetWide() - 20, DFrame:GetTall() - 110 )
 	DPanelList:SetSpacing( 2 )
 	DPanelList:EnableVerticalScrollbar( true )
 	DPanelList.VBar.Paint = function( s, w, h )
@@ -687,7 +781,7 @@ net.Receive("LMMESTOREOpenManageItems", function()
 	DPanelList.VBar.btnUp.Paint = function( s, w, h ) end
 	DPanelList.VBar.btnDown.Paint = function( s, w, h ) end
 	DPanelList.VBar.btnGrip.Paint = function( s, w, h )
-		draw.RoundedBox( 4, 5, 0, 4, h+22, Color(0,0,0,70))
+		draw.RoundedBox(2, 0, 0, DFrame:GetWide(), DFrame:GetTall(), Color(35, 35, 35, 255))
 	end	
 	
 	if #thetableshipments == 0 and #thetableweapons == 0 and #thetableammo == 0 then
@@ -700,8 +794,7 @@ net.Receive("LMMESTOREOpenManageItems", function()
 		--	ItemMain:ShowCloseButton( false )
 			ItemMain:SetText( "" )
 			ItemMain.Paint = function( self, w, h )
-				drawRectOutline( 2, 2, w - 2, h - 2, Color( 0, 0, 0, 85 ) )
-				draw.RoundedBox(0, 2, 2, w , h , Color(0,0,0,125))
+				draw.RoundedBox(2, 0, 0, DFrame:GetWide(), DFrame:GetTall(), Color(40, 40, 40, 250))
 			end			
 			ItemMain.DoClick = function()
 				Derma_Query(
@@ -783,7 +876,7 @@ net.Receive("LMMESTOREOpenManageItems", function()
 			weaponl:SetText("Shipment: "..v[4].." (count: "..v[3]..")")
 			weaponl:SetPos(100, 10)
 			weaponl:SetSize(500, 30)
-			weaponl:SetFont("LMMESTOREJobFont")
+			weaponl:SetFont("LMMESTORESellLabel")
 			
 			CurrAva = vgui.Create("DLabel", ItemMain)
 			local thetext = ""
@@ -791,19 +884,19 @@ net.Receive("LMMESTOREOpenManageItems", function()
 			CurrAva:SetText("On the market: "..thetext)
 			CurrAva:SetPos(100, 35)
 			CurrAva:SetSize(500, 30)
-			CurrAva:SetFont("LMMESTOREJobFont")
+			CurrAva:SetFont("LMMESTORESellLabel")
 			
 			descriptionl = vgui.Create("DLabel", ItemMain)
 			descriptionl:SetText(v[6])
 			descriptionl:SetPos(100, 60)
 			descriptionl:SetSize(500, 30)
-			descriptionl:SetFont("LMMESTOREJobFont")			
+			descriptionl:SetFont("LMMESTORESellLabel")			
 
 			pricel = vgui.Create("DLabel", ItemMain)
 			pricel:SetText("Price: "..v[7])
 			pricel:SetPos(100, 85)
 			pricel:SetSize(500, 30)
-			pricel:SetFont("LMMESTOREJobFont")			
+			pricel:SetFont("LMMESTORESellLabel")			
 
 			DPanelList:AddItem(ItemMain)			
 		end	
@@ -815,8 +908,7 @@ net.Receive("LMMESTOREOpenManageItems", function()
 		--	ItemMain:ShowCloseButton( false )
 			ItemMain:SetText( "" )
 			ItemMain.Paint = function( self, w, h )
-				drawRectOutline( 2, 2, w - 2, h - 2, Color( 0, 0, 0, 85 ) )
-				draw.RoundedBox(0, 2, 2, w , h , Color(0,0,0,125))
+				draw.RoundedBox(2, 0, 0, DFrame:GetWide(), DFrame:GetTall(), Color(40, 40, 40, 250))
 			end			
 			ItemMain.DoClick = function()
 				Derma_Query(
@@ -898,7 +990,7 @@ net.Receive("LMMESTOREOpenManageItems", function()
 			weaponl:SetText("Weapon: "..v[3])
 			weaponl:SetPos(100, 10)
 			weaponl:SetSize(500, 30)
-			weaponl:SetFont("LMMESTOREJobFont")
+			weaponl:SetFont("LMMESTORESellLabel")
 			
 			CurrAva = vgui.Create("DLabel", ItemMain)
 			local thetext = ""
@@ -906,19 +998,19 @@ net.Receive("LMMESTOREOpenManageItems", function()
 			CurrAva:SetText("On the market: "..thetext)
 			CurrAva:SetPos(100, 35)
 			CurrAva:SetSize(500, 30)
-			CurrAva:SetFont("LMMESTOREJobFont")
+			CurrAva:SetFont("LMMESTORESellLabel")
 			
 			descriptionl = vgui.Create("DLabel", ItemMain)
 			descriptionl:SetText(v[5])
 			descriptionl:SetPos(100, 60)
 			descriptionl:SetSize(500, 30)
-			descriptionl:SetFont("LMMESTOREJobFont")			
+			descriptionl:SetFont("LMMESTORESellLabel")			
 
 			pricel = vgui.Create("DLabel", ItemMain)
 			pricel:SetText("Price: "..v[6])
 			pricel:SetPos(100, 85)
 			pricel:SetSize(500, 30)
-			pricel:SetFont("LMMESTOREJobFont")			
+			pricel:SetFont("LMMESTORESellLabel")			
 
 			DPanelList:AddItem(ItemMain)			
 		end	
@@ -930,8 +1022,7 @@ net.Receive("LMMESTOREOpenManageItems", function()
 		--	ItemMain:ShowCloseButton( false )
 			ItemMain:SetText( "" )
 			ItemMain.Paint = function( self, w, h )
-				drawRectOutline( 2, 2, w - 2, h - 2, Color( 0, 0, 0, 85 ) )
-				draw.RoundedBox(0, 2, 2, w , h , Color(0,0,0,125))
+				draw.RoundedBox(2, 0, 0, DFrame:GetWide(), DFrame:GetTall(), Color(40, 40, 40, 250))
 			end			
 			ItemMain.DoClick = function()
 				Derma_Query(
@@ -1013,7 +1104,7 @@ net.Receive("LMMESTOREOpenManageItems", function()
 			weaponl:SetText("Ammo Type: "..v[4].." (count: "..v[3]..")")
 			weaponl:SetPos(100, 10)
 			weaponl:SetSize(500, 30)
-			weaponl:SetFont("LMMESTOREJobFont")
+			weaponl:SetFont("LMMESTORESellLabel")
 			
 			CurrAva = vgui.Create("DLabel", ItemMain)
 			local thetext = ""
@@ -1021,19 +1112,19 @@ net.Receive("LMMESTOREOpenManageItems", function()
 			CurrAva:SetText("On the market: "..thetext)
 			CurrAva:SetPos(100, 35)
 			CurrAva:SetSize(500, 30)
-			CurrAva:SetFont("LMMESTOREJobFont")
+			CurrAva:SetFont("LMMESTORESellLabel")
 			
 			descriptionl = vgui.Create("DLabel", ItemMain)
 			descriptionl:SetText(v[6])
 			descriptionl:SetPos(100, 60)
 			descriptionl:SetSize(500, 30)
-			descriptionl:SetFont("LMMESTOREJobFont")			
+			descriptionl:SetFont("LMMESTORESellLabel")			
 
 			pricel = vgui.Create("DLabel", ItemMain)
 			pricel:SetText("Price: "..v[7])
 			pricel:SetPos(100, 85)
 			pricel:SetSize(500, 30)
-			pricel:SetFont("LMMESTOREJobFont")			
+			pricel:SetFont("LMMESTORESellLabel")			
 
 			DPanelList:AddItem(ItemMain)			
 		end	
@@ -1041,14 +1132,18 @@ net.Receive("LMMESTOREOpenManageItems", function()
 	end
 
 	local DashbordB = vgui.Create( "DButton", DFrame )
-	DashbordB:SetPos( 10, 565 )
+	DashbordB:SetPos( 10, 540 )
 	DashbordB:SetSize( DFrame:GetWide() - 20,20 )
-	DashbordB:SetText( "Dashbord" )
-	DashbordB:SetTextColor( Color( 255, 255, 255 ) )	
+	DashbordB:SetText( "Dashboard" )
+	DashbordB.OnCursorEntered = function(self)
+		self.hover = true
+	end
+	DashbordB.OnCursorExited = function(self)
+		self.hover = false
+	end	
 	DashbordB.Paint = function( self, w, h )		
-		DrawBlur(DashbordB, 2)
-		drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-		draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))
+		draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(0,160,255,250)) or Color(255,255,255,255)) -- Paints on hover
+		DashbordB:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
 	end
 	DashbordB.DoClick = function()
 		net.Start("LMMESTOREOpenTheDashbord")
@@ -1064,53 +1159,58 @@ net.Receive("LMMESTOREOpeneStore", function()
 	local thetableammo = net.ReadTable()
 	
 	local DFrame = vgui.Create( "DFrame" )
-	DFrame:SetSize( 550, 600 )
+	DFrame:SetSize( 550, 580 )
 	DFrame:Center()
 	DFrame:SetDraggable( true )
 	DFrame:MakePopup()
 	DFrame:SetTitle( "" )
 	DFrame:ShowCloseButton( false )
 	DFrame.Paint = function( self, w, h )
-		DrawBlur(DFrame, 2)
-		drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-		draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 85))
-		drawRectOutline( 2, 2, w - 4, h / 12.9, Color( 0, 0, 0, 85 ) )
-		draw.RoundedBox(0, 2, 2, w - 4, h / 13, Color(0,0,0,125))
-		draw.SimpleText( "eStore", "LMMESTORETitleFont", DFrame:GetWide() / 2, 25, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.RoundedBox(2, 0, 0, DFrame:GetWide(), DFrame:GetTall(), Color(20, 20, 20, 250))
+		draw.RoundedBox(2, 0, 0, DFrame:GetWide(), 30, Color(40, 40, 40, 255))
+		draw.SimpleText( "eStore", "LMMESTORETitleFont", DFrame:GetWide() / 2, 15, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 	
-	local frameclose = vgui.Create( "DButton", DFrame )
-	frameclose:SetSize( 35, 35 )
-	frameclose:SetPos( DFrame:GetWide() - 36,9 )
-	frameclose:SetText( "X" )
-	frameclose:SetFont( "fontclose" )
-	frameclose:SetTextColor( Color( 255, 255, 255 ) )
-	frameclose.Paint = function()
-		
-	end
+	local frameclose = vgui.Create("DButton", DFrame)
+	frameclose:SetSize(20, 20)
+	frameclose:SetPos(DFrame:GetWide() - frameclose:GetWide() - 3, 3)
+	frameclose:SetText("X")
+	frameclose:SetTextColor(Color(0,0,0,255))
+	frameclose:SetFont("LMMESTOREfontclose")
+	frameclose.hover = false
 	frameclose.DoClick = function()
 		DFrame:Close()
-		DFrame:Remove()
 	end
+	frameclose.OnCursorEntered = function(self)
+		self.hover = true
+	end
+	frameclose.OnCursorExited = function(self)
+		self.hover = false
+	end
+	function frameclose:Paint(w, h)	
+		draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(255,15,15,250)) or Color(255,255,255,255)) -- Paints on hover
+		frameclose:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
+	end
+
 
 	local function NoItems()
 		local NoItems = vgui.Create( "DLabel", DFrame )
 		NoItems:SetText( "There are no items in the eStore!" )
-		NoItems:SetFont( "LMMESTORENameFont" )
+		NoItems:SetFont( "LMMESTORENoFont" )
 		NoItems:SetTextColor( Color( 200, 200, 200 ) )
 		NoItems:SizeToContents()
 		NoItems:Center()
-	end
+	end 
 
 	instl = vgui.Create("DLabel", DFrame)
 	instl:SetText("Click on the item you would like to buy!")
-	instl:SetPos(15, 50)
+	instl:SetPos(15, 30)
 	instl:SetSize(500, 30)
 	instl:SetTextColor(Color(255,0,0))
 	
 	local DPanelList = vgui.Create( "DPanelList", DFrame )
-	DPanelList:SetPos( 10, 80 )
-	DPanelList:SetSize( DFrame:GetWide() - 20, DFrame:GetTall() - 130 )
+	DPanelList:SetPos( 10, 60 )
+	DPanelList:SetSize( DFrame:GetWide() - 20, DFrame:GetTall() - 110 )
 	DPanelList:SetSpacing( 2 )
 	DPanelList:EnableVerticalScrollbar( true )
 	DPanelList.VBar.Paint = function( s, w, h )
@@ -1119,22 +1219,20 @@ net.Receive("LMMESTOREOpeneStore", function()
 	DPanelList.VBar.btnUp.Paint = function( s, w, h ) end
 	DPanelList.VBar.btnDown.Paint = function( s, w, h ) end
 	DPanelList.VBar.btnGrip.Paint = function( s, w, h )
-		draw.RoundedBox( 4, 5, 0, 4, h+22, Color(0,0,0,70))
+		draw.RoundedBox(2, 0, 0, DFrame:GetWide(), DFrame:GetTall(), Color(35, 35, 35, 255))
 	end	
 	
 	if #thetableshipments == 0 and #thetableweapons == 0 and #thetableammo == 0 then
 		NoItems()
-	else
+	else 
 		for k, v in pairs(thetableshipments) do
 			--seller, sellerhere, count, weapon, model, desc, price
-			print(tostring(v[2]))
 			local ItemMain = vgui.Create( "DButton", DPanelList )
 			ItemMain:SetSize( DPanelList:GetWide(), 120 )
 		--	ItemMain:ShowCloseButton( false )
 			ItemMain:SetText( "" ) 
 			ItemMain.Paint = function( self, w, h )
-				drawRectOutline( 2, 2, w - 2, h - 2, Color( 0, 0, 0, 85 ) )
-				draw.RoundedBox(0, 2, 2, w , h , Color(0,0,0,125))
+				draw.RoundedBox(2, 0, 0, DFrame:GetWide(), DFrame:GetTall(), Color(40, 40, 40, 250))
 			end			
 			ItemMain.DoClick = function()
 				if v[2] == true then
@@ -1156,33 +1254,33 @@ net.Receive("LMMESTOREOpeneStore", function()
 			weaponl:SetText("Shipment: "..v[4].." (count: "..v[3]..")")
 			weaponl:SetPos(100, 10)
 			weaponl:SetSize(500, 30)
-			weaponl:SetFont("LMMESTOREJobFont")
+			weaponl:SetFont("LMMESTORESellLabel")
 
 			if v[2] != false then
 				sellerl = vgui.Create("DLabel", ItemMain)
 				sellerl:SetText("Seller: "..v[1]:Nick())
 				sellerl:SetPos(100, 35)
 				sellerl:SetSize(500, 30)
-				sellerl:SetFont("LMMESTOREJobFont")
+				sellerl:SetFont("LMMESTORESellLabel")
 			else
 				sellerl = vgui.Create("DLabel", ItemMain)
 				sellerl:SetText("Seller: "..v[1])
 				sellerl:SetPos(100, 35)
 				sellerl:SetSize(500, 30)
-				sellerl:SetFont("LMMESTOREJobFont")			
+				sellerl:SetFont("LMMESTORESellLabel")			
 			end
 			
 			descriptionl = vgui.Create("DLabel", ItemMain)
 			descriptionl:SetText(v[6])
 			descriptionl:SetPos(100, 60)
 			descriptionl:SetSize(500, 30)
-			descriptionl:SetFont("LMMESTOREJobFont")			
+			descriptionl:SetFont("LMMESTORESellLabel")			
 
 			pricel = vgui.Create("DLabel", ItemMain)
 			pricel:SetText("Price: "..v[7])
 			pricel:SetPos(100, 85)
 			pricel:SetSize(500, 30)
-			pricel:SetFont("LMMESTOREJobFont")			
+			pricel:SetFont("LMMESTORESellLabel")			
 
 			DPanelList:AddItem(ItemMain)			
 		end	
@@ -1194,8 +1292,7 @@ net.Receive("LMMESTOREOpeneStore", function()
 		--	ItemMain:ShowCloseButton( false )
 			ItemMain:SetText( "" )
 			ItemMain.Paint = function( self, w, h )
-				drawRectOutline( 2, 2, w - 2, h - 2, Color( 0, 0, 0, 85 ) )
-				draw.RoundedBox(0, 2, 2, w , h , Color(0,0,0,125))
+				draw.RoundedBox(2, 0, 0, DFrame:GetWide(), DFrame:GetTall(), Color(40, 40, 40, 250))
 			end			
 			ItemMain.DoClick = function()
 				if v[2] == true then
@@ -1217,33 +1314,33 @@ net.Receive("LMMESTOREOpeneStore", function()
 			weaponl:SetText("Weapon: "..v[3])
 			weaponl:SetPos(100, 10)
 			weaponl:SetSize(500, 30)
-			weaponl:SetFont("LMMESTOREJobFont")
+			weaponl:SetFont("LMMESTORESellLabel")
 			
-			if tobool(v[1]) != false then
+			if v[2] != false then
 				sellerl = vgui.Create("DLabel", ItemMain)
 				sellerl:SetText("Seller: "..v[1]:Nick())
 				sellerl:SetPos(100, 35)
 				sellerl:SetSize(500, 30)
-				sellerl:SetFont("LMMESTOREJobFont")
+				sellerl:SetFont("LMMESTORESellLabel")
 			else
 				sellerl = vgui.Create("DLabel", ItemMain)
-				sellerl:SetText("Seller: Offline Player")
+				sellerl:SetText("Seller: "..v[1])
 				sellerl:SetPos(100, 35)
 				sellerl:SetSize(500, 30)
-				sellerl:SetFont("LMMESTOREJobFont")			
+				sellerl:SetFont("LMMESTORESellLabel")			
 			end
 			
 			descriptionl = vgui.Create("DLabel", ItemMain)
 			descriptionl:SetText(v[5])
 			descriptionl:SetPos(100, 60)
 			descriptionl:SetSize(500, 30)
-			descriptionl:SetFont("LMMESTOREJobFont")			
+			descriptionl:SetFont("LMMESTORESellLabel")			
 
 			pricel = vgui.Create("DLabel", ItemMain)
 			pricel:SetText("Price: "..v[6])
 			pricel:SetPos(100, 85)
 			pricel:SetSize(500, 30)
-			pricel:SetFont("LMMESTOREJobFont")			
+			pricel:SetFont("LMMESTORESellLabel")			
 
 			DPanelList:AddItem(ItemMain)	
 		end
@@ -1255,8 +1352,7 @@ net.Receive("LMMESTOREOpeneStore", function()
 		--	ItemMain:ShowCloseButton( false )
 			ItemMain:SetText( "" )
 			ItemMain.Paint = function( self, w, h )
-				drawRectOutline( 2, 2, w - 2, h - 2, Color( 0, 0, 0, 85 ) )
-				draw.RoundedBox(0, 2, 2, w , h , Color(0,0,0,125))
+				draw.RoundedBox(2, 0, 0, DFrame:GetWide(), DFrame:GetTall(), Color(40, 40, 40, 250))
 			end			
 			ItemMain.DoClick = function()
 				if v[2] == true then
@@ -1278,47 +1374,51 @@ net.Receive("LMMESTOREOpeneStore", function()
 			weaponl:SetText("Ammo Type: "..v[4].." (count: "..v[3]..")")
 			weaponl:SetPos(100, 10)
 			weaponl:SetSize(500, 30)
-			weaponl:SetFont("LMMESTOREJobFont")
+			weaponl:SetFont("LMMESTORESellLabel")
 			
-			if tobool(v[1]) != false then
+			if v[2] != false then
 				sellerl = vgui.Create("DLabel", ItemMain)
 				sellerl:SetText("Seller: "..v[1]:Nick())
 				sellerl:SetPos(100, 35)
 				sellerl:SetSize(500, 30)
-				sellerl:SetFont("LMMESTOREJobFont")
+				sellerl:SetFont("LMMESTORESellLabel")
 			else
 				sellerl = vgui.Create("DLabel", ItemMain)
-				sellerl:SetText("Seller: Offline Player")
+				sellerl:SetText("Seller: "..v[1])
 				sellerl:SetPos(100, 35)
 				sellerl:SetSize(500, 30)
-				sellerl:SetFont("LMMESTOREJobFont")			
+				sellerl:SetFont("LMMESTORESellLabel")			
 			end
 			
 			descriptionl = vgui.Create("DLabel", ItemMain)
 			descriptionl:SetText(v[6])
 			descriptionl:SetPos(100, 60)
 			descriptionl:SetSize(500, 30)
-			descriptionl:SetFont("LMMESTOREJobFont")			
+			descriptionl:SetFont("LMMESTORESellLabel")			
 
 			pricel = vgui.Create("DLabel", ItemMain)
 			pricel:SetText("Price: "..v[7])
 			pricel:SetPos(100, 85)
 			pricel:SetSize(500, 30)
-			pricel:SetFont("LMMESTOREJobFont")			
+			pricel:SetFont("LMMESTORESellLabel")			
 
 			DPanelList:AddItem(ItemMain)	
 		end		
 	end
 
 	local DashbordB = vgui.Create( "DButton", DFrame )
-	DashbordB:SetPos( 10, 565 )
+	DashbordB:SetPos( 10, 540 )
 	DashbordB:SetSize( DFrame:GetWide() - 20,20 )
-	DashbordB:SetText( "Dashbord" )
-	DashbordB:SetTextColor( Color( 255, 255, 255 ) )	
+	DashbordB:SetText( "Dashboard" )
+	DashbordB.OnCursorEntered = function(self)
+		self.hover = true
+	end
+	DashbordB.OnCursorExited = function(self)
+		self.hover = false
+	end	
 	DashbordB.Paint = function( self, w, h )		
-		DrawBlur(DashbordB, 2)
-		drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-		draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))
+		draw.RoundedBox(0, 0, 0, w, h, (self.hover and Color(0,160,255,250)) or Color(255,255,255,255)) -- Paints on hover
+		DashbordB:SetTextColor(self.hover and Color(255,255,255,250) or Color(0,0,0,255))
 	end
 	DashbordB.DoClick = function()
 		net.Start("LMMESTOREOpenTheDashbord")
