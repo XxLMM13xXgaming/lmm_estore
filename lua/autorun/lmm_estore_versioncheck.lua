@@ -1,4 +1,3 @@
-require( "tmysql4" ) 
 --[[You really should not edit this!]]--
 local version = "1.0" -- DO NOT EDIT THIS!
 local version_url = "https://gist.githubusercontent.com/XxLMM13xXgaming/c761d31a8358565bc758c28b4972ce77/raw/LMMESTORE" -- DO NOT EDIT THIS!
@@ -10,6 +9,7 @@ local addon_id = "LMMESTORE" -- DO NOT EDIT THIS
 local addon_name = "eStore" -- DO NOT EDIT THIS
   
 if (SERVER) then  
+	require( "tmysql4" )  
 
 	AddCSLuaFile("lmm_estore_config.lua")
 	include("lmm_estore_config.lua")

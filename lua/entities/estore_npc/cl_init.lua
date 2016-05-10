@@ -1,6 +1,15 @@
 include('shared.lua')
 include("lmm_estore_config.lua")
 
+surface.CreateFont( "LMMESTORENPCBounceFont", {
+	font = "Lato Light",
+	size = 80,
+	weight = 250,
+	antialias = true,
+	strikeout = false,
+	additive = true,
+} )
+
 net.Receive("LMMESTOREOpeneStoreDMAN", function()
 
 	local thetableshipments = net.ReadTable()
