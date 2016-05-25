@@ -1,29 +1,29 @@
 --[[You really should not edit this!]]--
-local version = "1.0" -- DO NOT EDIT THIS!
-local version_url = "https://gist.githubusercontent.com/XxLMM13xXgaming/c761d31a8358565bc758c28b4972ce77/raw/LMMESTORE" -- DO NOT EDIT THIS!
+local version = "1.1" -- DO NOT EDIT THIS!
+local version_url = "https://raw.githubusercontent.com/XxLMM13xXgaming/lmm_estore/master/version.txt" -- DO NOT EDIT THIS!
 local update_url = "https://github.com/XxLMM13xXgaming/lmm_estore" -- DO NOT EDIT THIS!
-local update_ur = "https://gist.githubusercontent.com/XxLMM13xXgaming/c89c161d6424d456acbe0e68cc276384/raw/LMMESTORE%2520UR" -- DO NOT EDIT THIS!
+local update_ur = "https://raw.githubusercontent.com/XxLMM13xXgaming/lmm_estore/master/versionur.txt" -- DO NOT EDIT THIS!
 local msg_outdated = "You are using a outdated/un-supported version. You are on version "..version.."! Please download the new version here: " .. update_url -- DO NOT EDIT THIS!
 local ranksthatgetnotify = { "superadmin", "owner", "admin" } -- DO NOT EDIT THIS!
 local addon_id = "LMMESTORE" -- DO NOT EDIT THIS
 local addon_name = "eStore" -- DO NOT EDIT THIS
-  
-if (SERVER) then  
-	require( "tmysql4" )  
+
+if (SERVER) then
+	require( "tmysql4" )
 
 	AddCSLuaFile("lmm_estore_config.lua")
 	include("lmm_estore_config.lua")
 	include("lmm_estore_mysql_config.lua")
-	  
+
 	local message = [[------------------------
 |  LMM eStore          |
 |  Created: 4/11/2016  |
 |  Version: ]]..version..[[        |
 ------------------------
 ]]
-	
-	MsgC(Color(68,255,0), message) 
- 
+
+	MsgC(Color(68,255,0), message)
+
 	----------------------------------------------------------------------------
 	-- Connect to database
 	----------------------------------------------------------------------------
@@ -32,13 +32,13 @@ if (SERVER) then
 	if LMMESTOREerr != nil or tostring( type( LMMESTOREdb ) ) == "boolean" then
 		MsgC( Color(255,0,0), "[eStore] Error connecting to the database!\n" )
 		MsgC( Color(255,0,0), "[eStore] MySQL Error: " .. LMMESTOREerr.."\n")
-	else 
+	else
 		MsgC(Color(0,255,0), "[eStore] Connected to the database!\n")
 	end
 	----------------------------------------------------------------------------
 	-- Connect to database
 	----------------------------------------------------------------------------
-	
+
 	----------------------------------------------------------------------------
 	-- Create tables
 	----------------------------------------------------------------------------
@@ -152,13 +152,13 @@ ALTER TABLE `weapons`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=32;
 
 INSERT INTO `players` (`id`, `player`, `earned`, `spent`, `unclaimed`) VALUES
-(1, 'server', '0', '0', '0');  
-  
+(1, 'server', '0', '0', '0');
+
  ]]
-	
+
 	LMMESTOREdb:Query( LMMESTORESQLCreateTables, function(result)
 		if result[1].status == false then
-			MsgC(Color(255,0,0), "[eStore] Error setting up the MySQL tables!\n")		
+			MsgC(Color(255,0,0), "[eStore] Error setting up the MySQL tables!\n")
 			PrintTable(result)
 		else
 			MsgC(Color(0,255,0), "[eStore] MySQL tables have been setup!\n")
@@ -167,22 +167,22 @@ INSERT INTO `players` (`id`, `player`, `earned`, `spent`, `unclaimed`) VALUES
 	----------------------------------------------------------------------------
 	-- Create tables
 	----------------------------------------------------------------------------
-	
+
 	if !file.Exists("lmmestore_data", "DATA") then
 		file.CreateDir("lmmestore_data", "DATA")
 		file.CreateDir("lmmestore_data/errors", "DATA")
-	end 
-	 
+	end
+
 	util.AddNetworkString(addon_id.."VersionCheckCL")
 	util.AddNetworkString(addon_id.."VersionCheckCLUR")
-	
+
 	http.Fetch(version_url, function(body, len, headers, code, ply)
 		if (string.Trim(body) ~= version) then
 			MsgC( Color(255,0,0), "["..addon_name.." ("..version..")] You are NOT using the latest version! (version: "..string.Trim(body)..")\n" )
 		else
 			MsgC( Color(255,0,0), "["..addon_name.." ("..version..")] You are using the latest version!\n" )
-		end  
-	end )	 
+		end
+	end )
 	timer.Create(addon_id.."VersionCheckServerTimer", 600, 0, function()
 		http.Fetch(version_url, function(body, len, headers, code, ply)
 			if (string.Trim(body) ~= version) then
@@ -190,10 +190,10 @@ INSERT INTO `players` (`id`, `player`, `earned`, `spent`, `unclaimed`) VALUES
 			end
 		end )
 	end )
-	
+
 	for k, v in pairs(player.GetAll()) do
 		if (table.HasValue( ranksthatgetnotify, v:GetUserGroup() ) ~= true) then return end
-		
+
 		http.Fetch(version_url, function(body, len, headers, code, ply)
 			if (string.Trim(body) ~= version) then
 				net.Start(addon_id.."VersionCheckCL")
@@ -204,26 +204,26 @@ INSERT INTO `players` (`id`, `player`, `earned`, `spent`, `unclaimed`) VALUES
 						net.WriteString(string.Trim(body))
 					net.Send(v)
 				end )
-				
+
 				http.Fetch(update_ur, function(body, len, headers, code, ply)
 					net.Start(addon_id.."VersionCheckCLUR")
 						net.WriteString(body)
-					net.Send(v)	
-				end)				
+					net.Send(v)
+				end)
 			else
 
 			end
-			  
+
 		end, function(error)
 
 			-- Silently fail
 
-		end)	
+		end)
 	end
-	
+
 	hook.Add("PlayerInitialSpawn", addon_id.."VersionCheck", function(theply)
 		if (table.HasValue( ranksthatgetnotify, theply:GetUserGroup() ) ~= true) then return end
-		
+
 		http.Fetch(version_url, function(body, len, headers, code, ply)
 			if (string.Trim(body) ~= version) then
 				net.Start(addon_id.."VersionCheckCL")
@@ -237,23 +237,23 @@ INSERT INTO `players` (`id`, `player`, `earned`, `spent`, `unclaimed`) VALUES
 				http.Fetch(update_ur, function(body, len, headers, code, ply)
 					net.Start(addon_id.."VersionCheckCLUR")
 						net.WriteString(body)
-					net.Send(theply)		 
-				end)								
+					net.Send(theply)
+				end)
 			else
 
 			end
-			  
+
 		end, function(error)
 
 			-- Silently fail
 
 		end)
 	end)
-	
-	 
+
+
 end
 
-if (CLIENT) then 
+if (CLIENT) then
 	include("lmm_estore_config.lua")
 	local message = [[------------------------
 |  LMM eStore          |
@@ -261,15 +261,15 @@ if (CLIENT) then
 |  Version: ]]..version..[[        |
 ------------------------
 ]]
-	
-	MsgC(Color(68,255,0), message) 	
+
+	MsgC(Color(68,255,0), message)
 	net.Receive(addon_id.."VersionCheckCL", function()
 		local nversion = net.ReadString()
 		MsgC(Color(0,0,0), "-----------------------------------------------------------------------------------\n")
-		chat.AddText(Color(255,0,0), "["..addon_name.."]: ", Color(255,255,255), addon_name.." is outdated! You are on version "..version.." and version "..nversion.." is out! Check console for more info!")		
+		chat.AddText(Color(255,0,0), "["..addon_name.."]: ", Color(255,255,255), addon_name.." is outdated! You are on version "..version.." and version "..nversion.." is out! Check console for more info!")
 		MsgC(Color(0,255,0), msg_outdated.."\n\n")
 	end)
-	
+
 	net.Receive(addon_id.."VersionCheckCLUR", function()
 		local reason = net.ReadString()
 

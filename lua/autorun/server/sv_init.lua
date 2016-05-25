@@ -40,7 +40,7 @@ function LMMESTOREBanUser(calling_ply, target_ply)
 	LMMESTOREdb:Query("INSERT INTO banned ( banned, time ) VALUES ( "..target_ply:SteamID64()..", "..time.." )")
 	net.Start("LMMESTORENotify")
 		net.WriteString(target_ply:Nick().." is now banned!")
-	net.Send(calling_ply)	
+	net.Send(calling_ply)
 	net.Start("LMMESTORENotify")
 		net.WriteString("You have been banned from the eStore by "..calling_ply:Nick().."!")
 	net.Send(target_ply)
@@ -54,9 +54,9 @@ function LMMESTOREUnBanUser(target_ply)
 		net.Start("LMMESTORENotify")
 			net.WriteString("You have been unbanned from the eStore!")
 		net.Send(target_ply)
-		
+
 		target_ply.LMMESTOREIsBanned = false
-		target_ply.LMMESTOREBannedTime = nil		
+		target_ply.LMMESTOREBannedTime = nil
 	end
 end
 
@@ -67,7 +67,7 @@ function LMMESTOREUnSubuser(target_ply)
 			net.WriteString("You have been unsubbed from the eStore! Renew now!")
 		net.Send(target_ply)
 		target_ply.LMMESTOREIsSubscribed = false
-		target_ply.LMMESTORESubscribedTime = nil			
+		target_ply.LMMESTORESubscribedTime = nil
 	end
 end
 
@@ -87,40 +87,49 @@ end
 
 function LMMESTOREUserSubscription(ply)
 	return ply.LMMESTOREIsSubscribed
-end	   	 
+end
 
 function LMMESTOREUserSubscriptionTime(ply)
 	return ply.LMMESTORESubscribedTime
 end
-	
+
 local function generateKey()
 	local str = ""
 	for i=1, 5 do
 		str = str .. string.char(math.random(48, 57))
 	end
-	 
-	return str   
+
+	return str
 end
 
 function LMMESTOREGetUserBySteamID(steamid)
 	for k, v in pairs(player.GetAll()) do
 		if v:SteamID64() == steamid then
 			return v
-		end	
+		end
 	end
 	return false
 end
 
-function LMMESTOREGetSQLString( str )
-	local esc = !ConnectedToMySQL and sql.Str or function( str ) return "\"" .. LMMESTOREdb:Escape( tostring( str ) ) .. "\"" end
-	return esc
+function LMMESTOREGetEscapedString(string)
+	if isstring(string) then
+		return LMMESTOREdb:Escape(string)
+	else
+		return string
+	end
 end
 
-function LMMESTOREGetEscapedString(string)
-	if isnumber(string) then
-		return string
+function LMMESTORECheckEntity(ent)
+	if isentity(ent) then
+		if ent:IsWeapon() then
+			return true
+		elseif string.find(ent:GetClass(), "shipment") then
+			return true
+		else
+			return false
+		end
 	else
-		return LMMESTOREdb:Escape(string)
+		return false
 	end
 end
 
@@ -129,7 +138,7 @@ function LMMESTOREOpeneStore(ply)
 		thetableshipments = {}
 		thetableweapons = {}
 		thetableammo = {}
-		
+
 		LMMESTOREdb:Query("SELECT * FROM shipments", function(result)
 			for i=1, #result[1].data do
 				if result[1].data[i].seller == "server" then
@@ -140,7 +149,7 @@ function LMMESTOREOpeneStore(ply)
 					sellerhere = true
 				else
 					seller = "Offline Player("..result[1].data[i].seller..")"
-					sellerhere = false				
+					sellerhere = false
 				end
 				local count = result[1].data[i].count
 				local weapon  = result[1].data[i].weapon
@@ -148,13 +157,13 @@ function LMMESTOREOpeneStore(ply)
 				local desc = result[1].data[i].description
 				local price = result[1].data[i].price
 				local id = result[1].data[i].id
-				
-				if tonumber(result[1].data[i].pending) == 0 then	
+
+				if tonumber(result[1].data[i].pending) == 0 then
 					table.insert( thetableshipments, {seller, sellerhere, count, weapon, model, string.sub(desc, 1, 63).."...", price, id} )
 				end
 			end
 		end)
-		
+
 		LMMESTOREdb:Query("SELECT * FROM weapons", function(result)
 			for i=1, #result[1].data do
 				if result[1].data[i].seller == "server" then
@@ -165,19 +174,19 @@ function LMMESTOREOpeneStore(ply)
 					sellerhere = true
 				else
 					seller = "Offline Player("..result[1].data[i].seller..")"
-					sellerhere = false				
+					sellerhere = false
 				end
 				weapon = result[1].data[i].weapon
 				model = result[1].data[i].model
 				desc = result[1].data[i].description
 				price = result[1].data[i].price
 				id = result[1].data[i].id
-				if tonumber(result[1].data[i].pending) == 0 then	
+				if tonumber(result[1].data[i].pending) == 0 then
 					table.insert( thetableweapons, {seller, sellerhere, weapon, model, string.sub(desc, 1, 63).."...", price, id} )
 				end
 			end
-		end)		
-		
+		end)
+
 		LMMESTOREdb:Query("SELECT * FROM ammo", function(result)
 			for i=1, #result[1].data do
 				if result[1].data[i].seller == "server" then
@@ -188,7 +197,7 @@ function LMMESTOREOpeneStore(ply)
 					sellerhere = true
 				else
 					seller = "Offline Player("..result[1].data[i].seller..")"
-					sellerhere = false				
+					sellerhere = false
 				end
 				count = result[1].data[i].count
 				ammoType = result[1].data[i].weapon
@@ -196,12 +205,12 @@ function LMMESTOREOpeneStore(ply)
 				desc = result[1].data[i].description
 				price = result[1].data[i].price
 				id = result[1].data[i].id
-				if tonumber(result[1].data[i].pending) == 0 then	
+				if tonumber(result[1].data[i].pending) == 0 then
 					table.insert( thetableammo, {seller, sellerhere, count, ammoType, model, string.sub(desc, 1, 63).."...", price, id} )
 				end
 			end
-		end)		
-		
+		end)
+
 		timer.Simple(.5, function()
 			net.Start("LMMESTOREOpeneStore")
 				net.WriteTable(thetableshipments)
@@ -227,14 +236,14 @@ function LMMESTOREGetPlayerByName( ply )
 end
 
 function LMMESTORECreateBotSale( specialnum )
-	tablenum = 0	
+	tablenum = 0
 	if specialnum == 0 then
 		for k, v in pairs(LMMESTOREConfig.BotSales) do
 			tablenum = tablenum + 1
 		end
 		specialnum = math.random(1, tablenum)
-	end	
- 
+	end
+
 	for k, v in pairs(LMMESTOREConfig.BotSales) do
 		local index = v.BotSalesIndex
 		local type = v.BotSalesType
@@ -242,36 +251,36 @@ function LMMESTORECreateBotSale( specialnum )
 		local weapon = v.BotSalesWeapon
 		local model = v.BotSalesModel
 	 	local desc = v.BotSalesDesc
-		local price = v.BotSalesPrice	
+		local price = v.BotSalesPrice
 		if index == specialnum then
 			if type == "shipment" then
-				local query = ("INSERT INTO shipments ( seller, count, weapon, model, description, price, pending ) VALUES ( %q, %d, %q, %q, %q, %d, 0 )"):format( "server", count, weapon, model, LMMESTOREGetEscapedString(desc), price )			
+				local query = ("INSERT INTO shipments ( seller, count, weapon, model, description, price, pending ) VALUES ( %q, %d, %q, %q, %q, %d, 0 )"):format( "server", count, weapon, model, LMMESTOREGetEscapedString(desc), price )
 				LMMESTOREdb:Query(query, function(result)
-					PrintTable(result)				
+					PrintTable(result)
 					net.Start("LMMESTORENotify")
 						net.WriteString("A bot has put a shipment for sale on the eStore!")
 					net.Broadcast()
 				end)
 			elseif type == "weapon" then
-				local query = ("INSERT INTO weapons ( seller, weapon, model, description, price, pending ) VALUES ( %q, %q, %q, %q, %d, 0 )"):format( "server", weapon, model, LMMESTOREGetEscapedString(desc), price )		
+				local query = ("INSERT INTO weapons ( seller, weapon, model, description, price, pending ) VALUES ( %q, %q, %q, %q, %d, 0 )"):format( "server", weapon, model, LMMESTOREGetEscapedString(desc), price )
 				LMMESTOREdb:Query(query, function(result)
 					PrintTable(result)
 					net.Start("LMMESTORENotify")
 						net.WriteString("A bot has put a weapon for sale on the eStore!")
-					net.Broadcast()				
+					net.Broadcast()
 				end)
 			elseif type == "ammo" then
 				local query = ("INSERT INTO ammo ( seller, count, weapon, model, description, price, pending ) VALUES ( %q, %d, %q, %q, %q, %d, 0 )"):format( "server", count, weapon, model, LMMESTOREGetEscapedString(desc), price )
 				LMMESTOREdb:Query(query, function(result)
-					PrintTable(result)				
+					PrintTable(result)
 					net.Start("LMMESTORENotify")
 						net.WriteString("A bot has put ammo for sale on the eStore!")
-					net.Broadcast()				
+					net.Broadcast()
 				end)
-			end 
+			end
 		end
-	end     
-end   
+	end
+end
 ----------------------------------------------------------------------------
 -- Functions
 ----------------------------------------------------------------------------
@@ -285,7 +294,7 @@ hook.Add("PlayerInitialSpawn", "LMMESTORESetStoreBanned", function(ply)
 			ply.LMMESTOREBannedTime = result[1].data[1].time
 		else
 			ply.LMMESTOREIsBanned = false
-			ply.LMMESTOREBannedTime = nil	
+			ply.LMMESTOREBannedTime = nil
 		end
 	end)
 end)
@@ -299,7 +308,7 @@ hook.Add("PlayerInitialSpawn", "LMMESTORESetStoreSubscription", function(ply)
 			ply.LMMESTOREIsSubscribed = false
 			ply.LMMESTORESubscribedTime = nil
 		end
-	end) 
+	end)
 end)
 
 local function LMMESTOREChatCommand(ply, text)
@@ -332,7 +341,7 @@ local function LMMESTOREChatCommand(ply, text)
 				net.WriteString(self:GetWeaponClass())
 				net.WriteString(self:GetModel())
 				net.WriteEntity(self)
-			net.Send(ply)	
+			net.Send(ply)
 			LMMESTOREdb:Query("SELECT * FROM players WHERE player = " .. ply:SteamID64(), function(result)
 				if result[1].affected <= 0 then
 					local query = ("INSERT INTO players ( player, earned, spent, unclaimed ) VALUES ( %q, %q, %q, %q )"):format( ply:SteamID64(), "0", "0", "0" )
@@ -352,7 +361,7 @@ local function LMMESTOREChatCommand(ply, text)
 				net.WriteString(self.ammoType)
 				net.WriteString(self:GetModel())
 				net.WriteEntity(self)
-			net.Send(ply)	
+			net.Send(ply)
 			LMMESTOREdb:Query("SELECT * FROM players WHERE player = " .. ply:SteamID64(), function(result)
 				if result[1].affected <= 0 then
 					local query = ("INSERT INTO players ( player, earned, spent, unclaimed ) VALUES ( %q, %q, %q, %q )"):format( ply:SteamID64(), "0", "0", "0" )
@@ -399,7 +408,7 @@ local function LMMESTOREChatCommand(ply, text)
 		end
 		return ''
 	end
-end 
+end
 hook.Add("PlayerSay", "LMMESTOREChatCommand", LMMESTOREChatCommand)
 
 local function LMMESTOREChatCommandBan(ply, text)
@@ -411,27 +420,27 @@ local function LMMESTOREChatCommandBan(ply, text)
 			net.Send(ply)
 			return ''
 		end
-		
+
 		local text = string.Explode(' ', text)
-				
+
 		if LMMESTOREGetPlayerByName(text[2]) == false then
 			net.Start("LMMESTORENotify")
 				net.WriteString("This player is not found!")
 			net.Send(ply)
 			return ''
 		end
-		
+
 		if LMMESTOREUserBanned(LMMESTOREGetPlayerByName(text[2])) == true then
 			net.Start("LMMESTORENotify")
 				net.WriteString("This player is already banned!")
-			net.Send(ply)			
+			net.Send(ply)
 			return ''
 		end
-		
+
 		LMMESTOREBanUser(ply, LMMESTOREGetPlayerByName(text[2]))
 		return ''
 	end
-end 
+end
 hook.Add("PlayerSay", "LMMESTOREChatCommandBan", LMMESTOREChatCommandBan)
 
 local function LMMESTOREChatCommandUnBan(ply, text)
@@ -442,28 +451,28 @@ local function LMMESTOREChatCommandUnBan(ply, text)
 		if !table.HasValue(LMMESTOREConfig.AdminGroups, ply:GetUserGroup()) then
 			net.Start("LMMESTORENotify")
 				net.WriteString("This command is for admins only!")
-			net.Send(ply)			
+			net.Send(ply)
 			return ''
 		end
-		
+
 		if LMMESTOREGetPlayerByName(text[2]) == false then
 			net.Start("LMMESTORENotify")
 				net.WriteString("You need to specify a player!")
-			net.Send(ply)			
+			net.Send(ply)
 			return ''
 		end
-		
+
 		if LMMESTOREUserBanned(LMMESTOREGetPlayerByName(text[2])) == false then
 			net.Start("LMMESTORENotify")
 				net.WriteString("This player is not banned!")
-			net.Send(ply)			
+			net.Send(ply)
 			return ''
 		end
-		
+
 		LMMESTOREUnBanUser(ply)
 		return ''
 	end
-end 
+end
 hook.Add("PlayerSay", "LMMESTOREChatCommandUnBan", LMMESTOREChatCommandUnBan)
 ----------------------------------------------------------------------------
 -- Hooks
@@ -506,7 +515,7 @@ end)
 -- Net Receives
 ----------------------------------------------------------------------------
 net.Receive("LMMESTOREClaimMoney", function(len, ply)
-	LMMESTOREdb:Query("SELECT * FROM players WHERE player = "..ply:SteamID64(), function(result)	
+	LMMESTOREdb:Query("SELECT * FROM players WHERE player = "..ply:SteamID64(), function(result)
 		if result[1].affected > 0 then
 			if tonumber(result[1].data[1].unclaimed) > 0 then
 				ply:addMoney(tonumber(result[1].data[1].unclaimed))
@@ -518,11 +527,11 @@ net.Receive("LMMESTOREClaimMoney", function(len, ply)
 			else
 				net.Start("LMMESTORENotify")
 					net.WriteString("There is no money to add to your wallet! Go make some money by selling stuff!")
-				net.Send(ply)			
+				net.Send(ply)
 			end
 		else
 			PrintTable(result)
-		end	
+		end
 	end)
 end)
 
@@ -547,20 +556,20 @@ net.Receive("LMMESTOREOpenProfile", function(len, ply)
 			net.Start("LMMESTOREOpenTheProfile")
 				net.WriteFloat(tonumber(result[1].data[1].earned))
 				net.WriteFloat(tonumber(result[1].data[1].spent))
-				net.WriteFloat(tonumber(result[1].data[1].unclaimed))				
+				net.WriteFloat(tonumber(result[1].data[1].unclaimed))
 				net.WriteBool(LMMESTOREUserSubscription(ply))
 				net.WriteString(tostring(os.date("%m/%d/%Y", LMMESTOREUserSubscriptionTime(ply))))
-			net.Send(ply)		
+			net.Send(ply)
 		end)
 	end
 end)
 
 net.Receive("LMMESTORERemoveShipment", function(len, ply)
-	local id = net.ReadString()
+	local id = LMMESTOREGetEscapedString(net.ReadString())
 
 	if !LMMESTOREUserBanned(ply) then
 		LMMESTOREdb:Query("DELETE FROM shipments WHERE id = "..id.." AND seller = "..ply:SteamID64(), function(result)
-			if result[1].status == true then 
+			if result[1].status == true then
 				net.Start("LMMESTORENotify")
 					net.WriteString("Your item is now off the estore!")
 				net.Send(ply)
@@ -568,15 +577,15 @@ net.Receive("LMMESTORERemoveShipment", function(len, ply)
 
 			end
 		end)
-	end	
+	end
 end)
 
 net.Receive("LMMESTORERemoveWeapon", function(len, ply)
-	local id = net.ReadString()
+	local id = LMMESTOREGetEscapedString(net.ReadString())
 
 	if !LMMESTOREUserBanned(ply) then
 		LMMESTOREdb:Query("DELETE FROM weapon WHERE id = "..id.." AND seller = "..ply:SteamID64(), function(result)
-			if result[1].status == true then 
+			if result[1].status == true then
 				net.Start("LMMESTORENotify")
 					net.WriteString("Your item is now off the estore!")
 				net.Send(ply)
@@ -584,15 +593,15 @@ net.Receive("LMMESTORERemoveWeapon", function(len, ply)
 
 			end
 		end)
-	end	
+	end
 end)
 
 net.Receive("LMMESTORERemoveAmmo", function(len, ply)
-	local id = net.ReadString()
+	local id = LMMESTOREGetEscapedString(net.ReadString())
 
 	if !LMMESTOREUserBanned(ply) then
 		LMMESTOREdb:Query("DELETE FROM ammo WHERE id = "..id.." AND seller = "..ply:SteamID64(), function(result)
-			if result[1].status == true then 
+			if result[1].status == true then
 				net.Start("LMMESTORENotify")
 					net.WriteString("Your item is now off the estore!")
 				net.Send(ply)
@@ -600,14 +609,14 @@ net.Receive("LMMESTORERemoveAmmo", function(len, ply)
 
 			end
 		end)
-	end	
+	end
 end)
- 
+
 net.Receive("LMMESTOREChangeShipmentPD", function(len, ply)
-	local id = net.ReadString()
-	local price = net.ReadString()
+	local id = LMMESTOREGetEscapedString(net.ReadString())
+	local price = LMMESTOREGetEscapedString(net.ReadString())
 	local desc = LMMESTOREGetEscapedString(net.ReadString())
-	
+
 	if !LMMESTOREUserBanned(ply) then
 		if price > 0 then
 			LMMESTOREdb:Query("UPDATE shipments SET price = "..price..", description = '"..desc.."' WHERE id = "..id.." AND seller = "..ply:SteamID64(), function(result)
@@ -624,10 +633,10 @@ net.Receive("LMMESTOREChangeShipmentPD", function(len, ply)
 end)
 
 net.Receive("LMMESTOREChangeWeaponPD", function(len, ply)
-	local id = net.ReadString()
-	local price = net.ReadString()
+	local id = LMMESTOREGetEscapedString(net.ReadString())
+	local price = LMMESTOREGetEscapedString(net.ReadString())
 	local desc = LMMESTOREGetEscapedString(net.ReadString())
-	
+
 	if !LMMESTOREUserBanned(ply) then
 		if price > 0 then
 			LMMESTOREdb:Query("UPDATE weapons SET price = "..price..", description = '"..desc.."' WHERE id = "..id.." AND seller = "..ply:SteamID64(), function(result)
@@ -644,11 +653,11 @@ net.Receive("LMMESTOREChangeWeaponPD", function(len, ply)
 end)
 
 net.Receive("LMMESTOREChangeAmmoPD", function(len, ply)
-	local id = net.ReadString()
-	local price = net.ReadString()
+	local id = LMMESTOREGetEscapedString(net.ReadString())
+	local price = LMMESTOREGetEscapedString(net.ReadString())
 	local desc = LMMESTOREGetEscapedString(net.ReadString())
-	
-	if !LMMESTOREUserBanned(ply) then	
+
+	if !LMMESTOREUserBanned(ply) then
 		if price > 0 then
 			LMMESTOREdb:Query("UPDATE ammo SET price = "..price..", description = '"..desc.."' WHERE id = "..id.." AND seller = "..ply:SteamID64(), function(result)
 				if result[1].status == false then
@@ -658,13 +667,13 @@ net.Receive("LMMESTOREChangeAmmoPD", function(len, ply)
 						net.WriteString("The price and description has been changed!")
 					net.Send(ply)
 				end
-			end)		
-		end	
+			end)
+		end
 	end
 end)
 
 net.Receive("LMMESTORESubmitShipment", function(len, ply)
-	local id = net.ReadString()
+	local id = LMMESTOREGetEscapedString(net.ReadString())
 
 	if LMMESTOREUserSubscription(ply) then
 		if !LMMESTOREUserBanned(ply) then
@@ -672,28 +681,28 @@ net.Receive("LMMESTORESubmitShipment", function(len, ply)
 				if result[1].affected <= 0 then
 					net.Start("LMMESTORENotify")
 						net.WriteString("This item is already on the eStore!")
-					net.Send(ply)					
+					net.Send(ply)
 				else
 					net.Start("LMMESTORENotify")
 						net.WriteString("Congrats! Your item is now in the eStore!")
-					net.Send(ply)				
+					net.Send(ply)
 				end
 			end)
 		else
 			net.Start("LMMESTORENotify")
 				net.WriteString("You are banned from the store!")
-			net.Send(ply)			
-		end	
+			net.Send(ply)
+		end
 	else
 		net.Start("LMMESTORENotify")
 			net.WriteString("You need a subscription to the eStore! Please visit the 'My profile' tab!")
-		net.Send(ply)	
+		net.Send(ply)
 	end
 
 end)
 
 net.Receive("LMMESTORESubmitWeapon", function(len, ply)
-	local id = net.ReadString()
+	local id = LMMESTOREGetEscapedString(net.ReadString())
 
 	if LMMESTOREUserSubscription(ply) then
 		if !LMMESTOREUserBanned(ply) then
@@ -701,27 +710,27 @@ net.Receive("LMMESTORESubmitWeapon", function(len, ply)
 				if result[1].affected <= 0 then
 					net.Start("LMMESTORENotify")
 						net.WriteString("This item is already on the eStore!")
-					net.Send(ply)					
+					net.Send(ply)
 				else
 					net.Start("LMMESTORENotify")
 						net.WriteString("Congrats! Your item is now in the eStore!")
-					net.Send(ply)				
+					net.Send(ply)
 				end
 			end)
 		else
 			net.Start("LMMESTORENotify")
 				net.WriteString("You are banned from the store!")
-			net.Send(ply)			
-		end	
+			net.Send(ply)
+		end
 	else
 		net.Start("LMMESTORENotify")
 			net.WriteString("You need a subscription to the eStore! Please visit the 'My profile' tab!")
-		net.Send(ply)	
+		net.Send(ply)
 	end
 end)
- 
+
 net.Receive("LMMESTORESubmitAmmo", function(len, ply)
-	local id = net.ReadString()
+	local id = LMMESTOREGetEscapedString(net.ReadString())
 
 	if LMMESTOREUserSubscription(ply) then
 		if !LMMESTOREUserBanned(ply) then
@@ -729,22 +738,22 @@ net.Receive("LMMESTORESubmitAmmo", function(len, ply)
 				if result[1].affected <= 0 then
 					net.Start("LMMESTORENotify")
 						net.WriteString("This item is already on the eStore!")
-					net.Send(ply)					
+					net.Send(ply)
 				else
 					net.Start("LMMESTORENotify")
 						net.WriteString("Congrats! Your item is now in the eStore!")
-					net.Send(ply)				
+					net.Send(ply)
 				end
 			end)
 		else
 			net.Start("LMMESTORENotify")
 				net.WriteString("You are banned from the store!")
-			net.Send(ply)			
-		end	
+			net.Send(ply)
+		end
 	else
 		net.Start("LMMESTORENotify")
 			net.WriteString("You need a subscription to the eStore! Please visit the 'My profile' tab!")
-		net.Send(ply)	
+		net.Send(ply)
 	end
 end)
 
@@ -753,7 +762,7 @@ net.Receive("LMMESTOREOpenItems", function(len, ply)
 		thetableshipments = {}
 		thetableweapons = {}
 		thetableammo = {}
-				
+
 		LMMESTOREdb:Query("SELECT * FROM shipments", function(result)
 			for i=1, #result[1].data do
 				if result[1].data[i].seller == "server" then
@@ -764,7 +773,7 @@ net.Receive("LMMESTOREOpenItems", function(len, ply)
 					sellerhere = true
 				else
 					seller = "Offline Player("..result[1].data[i].seller..")"
-					sellerhere = false				
+					sellerhere = false
 				end
 				local count = result[1].data[i].count
 				local weapon  = result[1].data[i].weapon
@@ -772,13 +781,13 @@ net.Receive("LMMESTOREOpenItems", function(len, ply)
 				local desc = result[1].data[i].description
 				local price = result[1].data[i].price
 				local id = result[1].data[i].id
-				
+
 				if result[1].data[i].seller == ply:SteamID64() then
 					table.insert( thetableshipments, {seller, sellerhere, count, weapon, model, string.sub(desc, 1, 63).."...", price, id, tonumber(result[1].data[i].pending)} )
 				end
 			end
 		end)
-		
+
 		LMMESTOREdb:Query("SELECT * FROM weapons", function(result)
 			for i=1, #result[1].data do
 				if result[1].data[i].seller == "server" then
@@ -789,20 +798,20 @@ net.Receive("LMMESTOREOpenItems", function(len, ply)
 					sellerhere = true
 				else
 					seller = "Offline Player("..result[1].data[i].seller..")"
-					sellerhere = false				
+					sellerhere = false
 				end
 				weapon = result[1].data[i].weapon
 				model = result[1].data[i].model
 				desc = result[1].data[i].description
 				price = result[1].data[i].price
 				id = result[1].data[i].id
-				
-				if result[1].data[i].seller == ply:SteamID64() then				
+
+				if result[1].data[i].seller == ply:SteamID64() then
 					table.insert( thetableweapons, {seller, sellerhere, weapon, model, string.sub(desc, 1, 63).."...", price, id, tonumber(result[1].data[i].pending)} )
 				end
 			end
-		end)		
-		
+		end)
+
 		LMMESTOREdb:Query("SELECT * FROM ammo", function(result)
 			for i=1, #result[1].data do
 				if result[1].data[i].seller == "server" then
@@ -813,7 +822,7 @@ net.Receive("LMMESTOREOpenItems", function(len, ply)
 					sellerhere = true
 				else
 					seller = "Offline Player("..result[1].data[i].seller..")"
-					sellerhere = false				
+					sellerhere = false
 				end
 				count = result[1].data[i].count
 				ammoType = result[1].data[i].weapon
@@ -821,13 +830,13 @@ net.Receive("LMMESTOREOpenItems", function(len, ply)
 				desc = result[1].data[i].description
 				price = result[1].data[i].price
 				id = result[1].data[i].id
-				
+
 				if result[1].data[i].seller == ply:SteamID64() then
 					table.insert( thetableammo, {seller, sellerhere, count, ammoType, model, string.sub(desc, 1, 63).."...", price, id, tonumber(result[1].data[i].pending)} )
 				end
 			end
-		end)		
-		
+		end)
+
 		timer.Simple(.5, function()
 			net.Start("LMMESTOREOpenManageItems")
 				net.WriteTable(thetableshipments)
@@ -847,9 +856,9 @@ net.Receive("LMMESTOREOpenShop", function(len, ply)
 end)
 
 net.Receive("LMMESTOREBuyShipment", function(len, ply)
-	local id = net.ReadString()
-	local thebuyer = ply:SteamID64()
-	
+	local id = LMMESTOREGetEscapedString(net.ReadString())
+	local thebuyer = LMMESTOREGetEscapedString(ply:SteamID64())
+
 	if !LMMESTOREUserBanned(ply) then
 		LMMESTOREdb:Query("SELECT * FROM shipments WHERE id = "..id, function(result)
 			thetype = "shipment"
@@ -863,22 +872,22 @@ net.Receive("LMMESTOREBuyShipment", function(len, ply)
 			if pending == 1 then
 				pendingbool = true
 			else
-				pendingbool = false			
+				pendingbool = false
 			end
-			
+
 			if ply:getDarkRPVar("money") > price then
 				if pendingbool == false then
-					local query = ("INSERT pickup ( type, seller, count, weapon, model, description, price, pending, buyer ) VALUES ( %q, %q, %q, %q, %q, %q, %q, %q, %q )"):format( thetype, seller, count, weapon, model, LMMESTOREGetEscapedString(description), price, pending, thebuyer )				
+					local query = ("INSERT pickup ( type, seller, count, weapon, model, description, price, pending, buyer ) VALUES ( %q, %q, %q, %q, %q, %q, %q, %q, %q )"):format( thetype, seller, count, weapon, model, LMMESTOREGetEscapedString(description), price, pending, thebuyer )
 					LMMESTOREdb:Query(query, function(result)
 						ply:addMoney(-price)
 						net.Start("LMMESTORENotify")
 							net.WriteString("$"..price.." has been taken from your account! You can pick up your weapons from the eStore delivery man!")
-						net.Send(ply)	
+						net.Send(ply)
 						LMMESTOREdb:Query("SELECT * FROM players WHERE player = "..thebuyer, function(result)
 							if result[1].affected > 0 then
 								LMMESTOREdb:Query("UPDATE players SET spent = "..tonumber(result[1].data[1].spent) + price.." WHERE player = "..thebuyer, function(result)
 									if result[1].affected > 0 then
-										
+
 									else
 										PrintTable(result)
 									end
@@ -892,13 +901,13 @@ net.Receive("LMMESTOREBuyShipment", function(len, ply)
 								if result[1].affected > 0 then
 									LMMESTOREdb:Query("UPDATE players SET earned = "..tonumber(result[1].data[1].earned) + price..", unclaimed = "..tonumber(result[1].data[1].unclaimed) + price.." WHERE player = "..seller, function(result)
 										if result[1].affected > 0 then
-											
-										else	
+
+										else
 											PrintTable(result)
 										end
-									end)														
-								end						
-							end)						
+									end)
+								end
+							end)
 						end
 						LMMESTOREdb:Query("DELETE FROM shipments WHERE id = "..id.." AND seller = '"..seller.."'", function(result)
 							if result[1].status == false then
@@ -910,19 +919,19 @@ net.Receive("LMMESTOREBuyShipment", function(len, ply)
 			else
 				net.Start("LMMESTORENotify")
 					net.WriteString("You do not have enough money!")
-				net.Send(ply)				
+				net.Send(ply)
 			end
 		end)
 	else
 		net.Start("LMMESTORENotify")
 			net.WriteString("You are banned from the store!")
-		net.Send(ply)	
+		net.Send(ply)
 	end
 end)
 
 net.Receive("LMMESTOREBuyWeapon", function(len, ply)
-	local id = net.ReadString()
-	local thebuyer = ply:SteamID64()
+	local id = LMMESTOREGetEscapedString(net.ReadString())
+	local thebuyer = LMMESTOREGetEscapedString(ply:SteamID64())
 
 	if !LMMESTOREUserBanned(ply) then
 		LMMESTOREdb:Query("SELECT * FROM weapons WHERE id = "..id, function(result)
@@ -937,12 +946,12 @@ net.Receive("LMMESTOREBuyWeapon", function(len, ply)
 			if pending == 1 then
 				pendingbool = true
 			else
-				pendingbool = false			
+				pendingbool = false
 			end
-			
+
 			if ply:getDarkRPVar("money") > price then
 				if pendingbool == false then
-					local query = ("INSERT pickup ( type, seller, count, weapon, model, description, price, pending, buyer ) VALUES ( %q, %q, %q, %q, %q, %q, %q, %q, %q )"):format( thetype, seller, count, weapon, model, description, price, pending, thebuyer )				
+					local query = ("INSERT pickup ( type, seller, count, weapon, model, description, price, pending, buyer ) VALUES ( %q, %q, %q, %q, %q, %q, %q, %q, %q )"):format( thetype, seller, count, weapon, model, description, price, pending, thebuyer )
 					LMMESTOREdb:Query(query, function(result)
 						ply:addMoney(-price)
 						net.Start("LMMESTORENotify")
@@ -952,7 +961,7 @@ net.Receive("LMMESTOREBuyWeapon", function(len, ply)
 							if result[1].affected > 0 then
 								LMMESTOREdb:Query("UPDATE players SET spent = "..tonumber(result[1].data[1].spent) + price.." WHERE player = "..thebuyer, function(result)
 									if result[1].affected > 0 then
-									
+
 									else
 
 									end
@@ -960,18 +969,18 @@ net.Receive("LMMESTOREBuyWeapon", function(len, ply)
 							else
 
 							end
-						end)	
+						end)
 						if !seller == "server" then
 							LMMESTOREdb:Query("SELECT * FROM players WHERE player = "..seller, function(result)
 								if result[1].affected > 0 then
 									LMMESTOREdb:Query("UPDATE players SET earned = "..tonumber(result[1].data[1].earned) + price..", unclaimed = "..tonumber(result[1].data[1].unclaimed) + price.." WHERE player = "..seller, function(result)
 										if result[1].affected > 0 then
-										
-										else	
+
+										else
 
 										end
-									end)														
-								end						
+									end)
+								end
 							end)
 						end
 						LMMESTOREdb:Query("DELETE FROM weapons WHERE id = "..id.." AND seller = '"..seller.."'", function(result)
@@ -990,13 +999,13 @@ net.Receive("LMMESTOREBuyWeapon", function(len, ply)
 	else
 		net.Start("LMMESTORENotify")
 			net.WriteString("You are banned from the store!")
-		net.Send(ply)	
+		net.Send(ply)
 	end
 end)
 
 net.Receive("LMMESTOREBuyAmmo", function(len, ply)
-	local id = net.ReadString()
-	local thebuyer = ply:SteamID64()
+	local id = LMMESTOREGetEscapedString(net.ReadString())
+	local thebuyer = LMMESTOREGetEscapedString(ply:SteamID64())
 
 	if !LMMESTOREUserBanned(ply) then
 		LMMESTOREdb:Query("SELECT * FROM ammo WHERE id = "..id, function(result)
@@ -1011,12 +1020,12 @@ net.Receive("LMMESTOREBuyAmmo", function(len, ply)
 			if pending == 1 then
 				pendingbool = true
 			else
-				pendingbool = false			
+				pendingbool = false
 			end
-			
+
 			if ply:getDarkRPVar("money") > price then
 				if pendingbool == false then
-					local query = ("INSERT pickup ( type, seller, count, weapon, model, description, price, pending, buyer ) VALUES ( %q, %q, %q, %q, %q, %q, %q, %q, %q )"):format( thetype, seller, count, weapon, model, description, price, pending, thebuyer )				
+					local query = ("INSERT pickup ( type, seller, count, weapon, model, description, price, pending, buyer ) VALUES ( %q, %q, %q, %q, %q, %q, %q, %q, %q )"):format( thetype, seller, count, weapon, model, description, price, pending, thebuyer )
 					LMMESTOREdb:Query(query, function(result)
 						ply:addMoney(-price)
 						net.Start("LMMESTORENotify")
@@ -1026,7 +1035,7 @@ net.Receive("LMMESTOREBuyAmmo", function(len, ply)
 							if result[1].affected > 0 then
 								LMMESTOREdb:Query("UPDATE players SET spent = "..tonumber(result[1].data[1].spent) + price.." WHERE player = "..thebuyer, function(result)
 									if result[1].affected > 0 then
-									
+
 									else
 
 									end
@@ -1034,19 +1043,19 @@ net.Receive("LMMESTOREBuyAmmo", function(len, ply)
 							else
 
 							end
-						end)	
+						end)
 						if !seller == "server" then
 							LMMESTOREdb:Query("SELECT * FROM players WHERE player = "..seller, function(result)
 								if result[1].affected > 0 then
 									LMMESTOREdb:Query("UPDATE players SET earned = "..tonumber(result[1].data[1].earned) + price..", unclaimed = "..tonumber(result[1].data[1].unclaimed) + price.." WHERE player = "..seller, function(result)
 										if result[1].affected > 0 then
-											
-										else	
+
+										else
 
 										end
-									end)														
-								end						
-							end)						
+									end)
+								end
+							end)
 						end
 						LMMESTOREdb:Query("DELETE FROM ammo WHERE id = "..id.." AND seller = '"..seller.."'", function(result)
 							if result[1].status == false then
@@ -1058,13 +1067,13 @@ net.Receive("LMMESTOREBuyAmmo", function(len, ply)
 			else
 				net.Start("LMMESTORENotify")
 					net.WriteString("You do not have enough money!")
-				net.Send(ply)				
+				net.Send(ply)
 			end
 		end)
 	else
 		net.Start("LMMESTORENotify")
 			net.WriteString("You are banned from the store!")
-		net.Send(ply)	
+		net.Send(ply)
 	end
 end)
 
@@ -1075,20 +1084,20 @@ net.Receive("LMMESTOREOpenTheDashbord", function(len, ply)
 	else
 		net.Start("LMMESTORENotify")
 			net.WriteString("You are banned from the store!")
-		net.Send(ply)	
+		net.Send(ply)
 	end
 end)
 
 net.Receive("LMMESTORESellItemShipment", function(len, ply)
 	if !LMMESTOREUserBanned(ply) then
-		local count = net.ReadFloat()
-		local class = net.ReadString()
-		local model = net.ReadString()
+		local count = LMMESTOREGetEscapedString(net.ReadFloat())
+		local class = LMMESTOREGetEscapedString(net.ReadString())
+		local model = LMMESTOREGetEscapedString(net.ReadString())
 		local desc = LMMESTOREGetEscapedString(net.ReadString())
-		local price = net.ReadFloat()
-		local ent = net.ReadEntity()
-		local steamid = ply:SteamID64()
-		local key = generateKey()
+		local price = LMMESTOREGetEscapedString(net.ReadFloat())
+		local ent = LMMESTOREGetEscapedString(net.ReadEntity())
+		local steamid = LMMESTOREGetEscapedString(ply:SteamID64())
+		local key = LMMESTOREGetEscapedString(generateKey())
 		local desc = string.gsub(desc, "|", "/")
 		local query = ("INSERT INTO shipments ( seller, count, weapon, model, description, price, pending ) VALUES ( %q, %d, %q, %q, %q, %d, 1 )"):format( ply:SteamID64(), count, class, model, desc, price )
 
@@ -1096,10 +1105,14 @@ net.Receive("LMMESTORESellItemShipment", function(len, ply)
 			return
 		end
 
+		if !LMMESTORECheckEntity(ent) then
+			return
+		end
+
 		if price < 0 then
 			return
 		end
-		
+
 		LMMESTOREdb:Query( query, function(result)
 			if result[1].status == true then
 				MsgC(Color(0,255,0), "[eStore] A shipment has been saved to the mysql database!\n")
@@ -1108,7 +1121,7 @@ net.Receive("LMMESTORESellItemShipment", function(len, ply)
 				file.Write("lmmestore_data/errors/"..generateKey()..".txt", "Error: "..tostring(result[1].error).."\nError ID: "..tostring(result[1].errorid).."\nStatus: "..tostring(result[1].status).."\nTime: "..tostring(result[1].time))
 				PrintTable(result)
 			end
-		end)		
+		end)
 		ent:Remove()
 		net.Start("LMMESTORENotify")
 			net.WriteString("Your shipment has been added to your 'Manage my items' tab in the eStore! Please tpye !estore and check it out to publish!")
@@ -1122,13 +1135,13 @@ end)
 
 net.Receive("LMMESTORESellItemWeapon", function(len, ply)
 	if !LMMESTOREUserBanned(ply) then
-		local class = net.ReadString()
-		local model = net.ReadString()
+		local class = LMMESTOREGetEscapedString(net.ReadString())
+		local model = LMMESTOREGetEscapedString(net.ReadString())
 		local desc = LMMESTOREGetEscapedString(net.ReadString())
-		local price = net.ReadFloat()
-		local ent = net.ReadEntity()
+		local price = LMMESTOREGetEscapedString(net.ReadFloat())
+		local ent = LMMESTOREGetEscapedString(net.ReadEntity())
 		local steamid = ply:SteamID64()
-		local key = generateKey()
+		local key = LMMESTOREGetEscapedString(generateKey())
 		local desc = string.gsub(desc, "|", "/")
 		local query = ("INSERT INTO weapons ( seller, weapon, model, description, price, pending ) VALUES ( %q, %q, %q, %q, %d, 1 )"):format( ply:SteamID64(), class, model, desc, price )
 
@@ -1136,10 +1149,14 @@ net.Receive("LMMESTORESellItemWeapon", function(len, ply)
 			return
 		end
 
+		if !LMMESTORECheckEntity(ent) then
+			return
+		end
+
 		if price < 0 then
 			return
-		end		
-		
+		end
+
 		LMMESTOREdb:Query( query, function(result)
 			if result[1].status == true then
 				MsgC(Color(0,255,0), "[eStore] A weapon has been saved to the mysql database!\n")
@@ -1148,7 +1165,7 @@ net.Receive("LMMESTORESellItemWeapon", function(len, ply)
 				file.Write("lmmestore_data/errors/"..generateKey()..".txt", "Error: "..tostring(result[1].error).."\nError ID: "..tostring(result[1].errorid).."\nStatus: "..tostring(result[1].status).."\nTime: "..tostring(result[1].time))
 				PrintTable(result)
 			end
-		end)		
+		end)
 		ent:Remove()
 		net.Start("LMMESTORENotify")
 			net.WriteString("Your weapon has been added to your 'Manage my items' tab in the eStore! Please tpye !estore and check it out to publish!")
@@ -1161,26 +1178,30 @@ net.Receive("LMMESTORESellItemWeapon", function(len, ply)
 end)
 
 net.Receive("LMMESTORESellItemAmmo", function(len, ply)
-	if !LMMESTOREUserBanned(ply) then	
-		local count = net.ReadFloat()
-		local ammotype = net.ReadString()
-		local model = net.ReadString()
+	if !LMMESTOREUserBanned(ply) then
+		local count = LMMESTOREGetEscapedString(net.ReadFloat())
+		local ammotype = LMMESTOREGetEscapedString(net.ReadString())
+		local model = LMMESTOREGetEscapedString(net.ReadString())
 		local desc = LMMESTOREGetEscapedString(net.ReadString())
-		local price = net.ReadFloat()
-		local ent = net.ReadEntity()
-		local steamid = ply:SteamID64()
-		local key = generateKey()
+		local price = LMMESTOREGetEscapedString(net.ReadFloat())
+		local ent = LMMESTOREGetEscapedString(net.ReadEntity())
+		local steamid = LMMESTOREGetEscapedString(ply:SteamID64())
+		local key = LMMESTOREGetEscapedString(generateKey())
 		local desc = string.gsub(desc, "|", "/")
 		local query = ("INSERT INTO ammo ( seller, count, weapon, model, description, price, pending ) VALUES ( %q, %d, %q, %q, %q, %d, 1 )"):format( ply:SteamID64(), count, ammotype, model, desc, price )
 
 		if !isnumber(price) then
 			return
 		end
- 
+
+		if !LMMESTORECheckEntity(ent) then
+			return
+		end
+
 		if price < 0 then
 			return
-		end		
-		
+		end
+
 		LMMESTOREdb:Query( query, function(result)
 			if result[1].status == true then
 				MsgC(Color(0,255,0), "[eStore] A ammo has been saved to the mysql database!\n")
@@ -1189,7 +1210,7 @@ net.Receive("LMMESTORESellItemAmmo", function(len, ply)
 				file.Write("lmmestore_data/errors/"..generateKey()..".txt", "Error: "..tostring(result[1].error).."\nError ID: "..tostring(result[1].errorid).."\nStatus: "..tostring(result[1].status).."\nTime: "..tostring(result[1].time))
 				PrintTable(result)
 			end
-		end)		
+		end)
 		ent:Remove()
 		net.Start("LMMESTORENotify")
 			net.WriteString("Your ammo has been added to your 'Manage my items' tab in the eStore! Please tpye !estore and check it out to publish!")
