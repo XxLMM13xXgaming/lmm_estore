@@ -1,1 +1,1 @@
-Some security checks and added a function!
+Some more security checks!
