@@ -1,5 +1,5 @@
 --[[You really should not edit this!]]--
-local version = "1.1" -- DO NOT EDIT THIS!
+local version = "1.2" -- DO NOT EDIT THIS!
 local version_url = "https://raw.githubusercontent.com/XxLMM13xXgaming/lmm_estore/master/version.txt" -- DO NOT EDIT THIS!
 local update_url = "https://github.com/XxLMM13xXgaming/lmm_estore" -- DO NOT EDIT THIS!
 local update_ur = "https://raw.githubusercontent.com/XxLMM13xXgaming/lmm_estore/master/versionur.txt" -- DO NOT EDIT THIS!

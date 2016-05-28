@@ -23,89 +23,89 @@ function ENT:Initialize()
 end
 
 net.Receive("LMMESTOREPickupShipment", function(len, ply)
-	local id = net.ReadString()
+	local id = LMMESTOREGetEscapedString(net.ReadString())
 	self = net.ReadEntity()
-	
-	LMMESTOREdb:Query("SELECT * FROM pickup WHERE id = "..id.." AND buyer = "..ply:SteamID64(), function(result)
-		if ply:SteamID64() == result[1].data[1].buyer then	
-			count = tonumber(result[1].data[1].count)
-			class = result[1].data[1].weapon
-			model = result[1].data[1].model
 
-			local weapon = ents.Create(class)
-			
-			weapon:SetPos(ply:GetPos() + Vector(0, 0, 20))
-			weapon:SetAngles(Angle(0,0,0))
-			weapon:SetModel(model)
-			weapon:Spawn()
-			weapon:Activate()		
-			if count > 1 then
-				timer.Create("LMMESTOREReceiveItems", 0, count - 1, function()
-					local weapon = ents.Create(class)
-					
-					weapon:SetPos(ply:GetPos() + Vector(0, 0, 20))
-					weapon:SetAngles(Angle(0,0,0))
-					weapon:SetModel(model)
-					weapon:Spawn()
-					weapon:Activate()		
-				end)
-			end
-			
-			LMMESTOREdb:Query("DELETE FROM pickup WHERE id = " .. id.." AND buyer = "..ply:SteamID64(), function(result)
-			end)
-			
-			net.Start("LMMESTORENotify")
-				net.WriteString("Your shipment has been givin in singles! Thanks for choosing eStore!")
-			net.Send(ply)		
-		end
-	end)	
-end)
-
-net.Receive("LMMESTOREPickupWeapon", function(len, ply)
-	local id = net.ReadString()
-	
-	LMMESTOREdb:Query("SELECT * FROM pickup WHERE id = "..id.." AND buyer = "..ply:SteamID64(), function(result)
-		if ply:SteamID64() == result[1].data[1].buyer then	
-			class = result[1].data[1].weapon
-			model = result[1].data[1].model
-
-			local weapon = ents.Create(class)
-			
-			weapon:SetPos(ply:GetPos() + Vector(0, 0, 20))
-			weapon:SetAngles(Angle(0,0,0))
-			weapon:SetModel(model)
-			weapon:Spawn()
-			weapon:Activate()		
-		
-			LMMESTOREdb:Query("DELETE FROM pickup WHERE id = " .. id.." AND buyer = "..ply:SteamID64(), function(result)
-			end)
-		
-			net.Start("LMMESTORENotify")
-				net.WriteString("Your weapon has been givin! Thanks for choosing eStore!")
-			net.Send(ply)		
-		end
-	end)	
-end)
-
-net.Receive("LMMESTOREPickupAmmo", function(len, ply)
-	local id = net.ReadString()
-	
 	LMMESTOREdb:Query("SELECT * FROM pickup WHERE id = "..id.." AND buyer = "..ply:SteamID64(), function(result)
 		if ply:SteamID64() == result[1].data[1].buyer then
 			count = tonumber(result[1].data[1].count)
 			class = result[1].data[1].weapon
 			model = result[1].data[1].model
-			
-			ply:GiveAmmo( count, class, true )
-			
+
+			local weapon = ents.Create(class)
+
+			weapon:SetPos(ply:GetPos() + Vector(0, 0, 20))
+			weapon:SetAngles(Angle(0,0,0))
+			weapon:SetModel(model)
+			weapon:Spawn()
+			weapon:Activate()
+			if count > 1 then
+				timer.Create("LMMESTOREReceiveItems", 0, count - 1, function()
+					local weapon = ents.Create(class)
+
+					weapon:SetPos(ply:GetPos() + Vector(0, 0, 20))
+					weapon:SetAngles(Angle(0,0,0))
+					weapon:SetModel(model)
+					weapon:Spawn()
+					weapon:Activate()
+				end)
+			end
+
 			LMMESTOREdb:Query("DELETE FROM pickup WHERE id = " .. id.." AND buyer = "..ply:SteamID64(), function(result)
 			end)
-			
+
+			net.Start("LMMESTORENotify")
+				net.WriteString("Your shipment has been givin in singles! Thanks for choosing eStore!")
+			net.Send(ply)
+		end
+	end)
+end)
+
+net.Receive("LMMESTOREPickupWeapon", function(len, ply)
+	local id = LMMESTOREGetEscapedString(net.ReadString())
+
+	LMMESTOREdb:Query("SELECT * FROM pickup WHERE id = "..id.." AND buyer = "..ply:SteamID64(), function(result)
+		if ply:SteamID64() == result[1].data[1].buyer then
+			class = result[1].data[1].weapon
+			model = result[1].data[1].model
+
+			local weapon = ents.Create(class)
+
+			weapon:SetPos(ply:GetPos() + Vector(0, 0, 20))
+			weapon:SetAngles(Angle(0,0,0))
+			weapon:SetModel(model)
+			weapon:Spawn()
+			weapon:Activate()
+
+			LMMESTOREdb:Query("DELETE FROM pickup WHERE id = " .. id.." AND buyer = "..ply:SteamID64(), function(result)
+			end)
+
+			net.Start("LMMESTORENotify")
+				net.WriteString("Your weapon has been givin! Thanks for choosing eStore!")
+			net.Send(ply)
+		end
+	end)
+end)
+
+net.Receive("LMMESTOREPickupAmmo", function(len, ply)
+	local id = LMMESTOREGetEscapedString(net.ReadString())
+
+	LMMESTOREdb:Query("SELECT * FROM pickup WHERE id = "..id.." AND buyer = "..ply:SteamID64(), function(result)
+		if ply:SteamID64() == result[1].data[1].buyer then
+			count = tonumber(result[1].data[1].count)
+			class = result[1].data[1].weapon
+			model = result[1].data[1].model
+
+			ply:GiveAmmo( count, class, true )
+
+			LMMESTOREdb:Query("DELETE FROM pickup WHERE id = " .. id.." AND buyer = "..ply:SteamID64(), function(result)
+			end)
+
 			net.Start("LMMESTORENotify")
 				net.WriteString("Your ammo has been givin! Thanks for choosing eStore!")
-			net.Send(ply)		
+			net.Send(ply)
 		end
-	end)	
+	end)
 end)
 
 function LMMESTOREOpeneStoreDMANOpen(ply, seller)
@@ -113,7 +113,7 @@ function LMMESTOREOpeneStoreDMANOpen(ply, seller)
 		thetableshipments = {}
 		thetableweapons = {}
 		thetableammo = {}
-		
+
 		LMMESTOREdb:Query("SELECT * FROM pickup", function(result)
 			for i=1, #result[1].data do
 				if result[1].data[i].type == "shipment" then
@@ -125,7 +125,7 @@ function LMMESTOREOpeneStoreDMANOpen(ply, seller)
 						sellerhere = true
 					else
 						seller = "Offline Player("..result[1].data[i].seller..")"
-						sellerhere = false				
+						sellerhere = false
 					end
 					local count = result[1].data[i].count
 					local weapon  = result[1].data[i].weapon
@@ -133,8 +133,8 @@ function LMMESTOREOpeneStoreDMANOpen(ply, seller)
 					local desc = result[1].data[i].description
 					local price = result[1].data[i].price
 					local id = result[1].data[i].id
-					
-					if result[1].data[i].buyer == ply:SteamID64() then	
+
+					if result[1].data[i].buyer == ply:SteamID64() then
 						table.insert( thetableshipments, {seller, sellerhere, count, weapon, model, string.sub(desc, 1, 63).."...", price, id} )
 					end
 				elseif result[1].data[i].type == "weapon" then
@@ -146,17 +146,17 @@ function LMMESTOREOpeneStoreDMANOpen(ply, seller)
 						sellerhere = true
 					else
 						seller = "Offline Player("..result[1].data[i].seller..")"
-						sellerhere = false				
+						sellerhere = false
 					end
 					weapon = result[1].data[i].weapon
 					model = result[1].data[i].model
 					desc = result[1].data[i].description
 					price = result[1].data[i].price
 					id = result[1].data[i].id
-					
-					if result[1].data[i].buyer == ply:SteamID64() then	
+
+					if result[1].data[i].buyer == ply:SteamID64() then
 						table.insert( thetableweapons, {seller, sellerhere, weapon, model, string.sub(desc, 1, 63).."...", price, id} )
-					end				
+					end
 				elseif result[1].data[i].type == "ammo" then
 					if result[1].data[i].seller == "server" then
 						seller = "server"
@@ -166,7 +166,7 @@ function LMMESTOREOpeneStoreDMANOpen(ply, seller)
 						sellerhere = true
 					else
 						seller = "Offline Player("..result[1].data[i].seller..")"
-						sellerhere = false				
+						sellerhere = false
 					end
 					count = result[1].data[i].count
 					ammoType = result[1].data[i].weapon
@@ -174,14 +174,14 @@ function LMMESTOREOpeneStoreDMANOpen(ply, seller)
 					desc = result[1].data[i].description
 					price = result[1].data[i].price
 					id = result[1].data[i].id
-					
-					if result[1].data[i].buyer == ply:SteamID64() then	
+
+					if result[1].data[i].buyer == ply:SteamID64() then
 						table.insert( thetableammo, {seller, sellerhere, count, ammoType, model, string.sub(desc, 1, 63).."...", price, id} )
-					end				
+					end
 				end
 			end
 		end)
-		
+
 		timer.Simple(.2, function()
 			net.Start("LMMESTOREOpeneStoreDMAN")
 				net.WriteTable(thetableshipments)
@@ -193,22 +193,22 @@ function LMMESTOREOpeneStoreDMANOpen(ply, seller)
 	else
 		net.Start("LMMESTORENotify")
 			net.WriteString("You are banned from the eStore!")
-		net.Send(Caller)	
+		net.Send(Caller)
 	end
 end
 
 function LMMESTORESpawnNPCAuto()
-		
+
 	local npc = ents.Create("estore_npc")
 	npc:Spawn()
 	npc:SetPos( LMMESTOREConfig.NPCPos )
 	npc:SetAngles( LMMESTOREConfig.NPCAng )
-	
-	npc:DropToFloor()	
+
+	npc:DropToFloor()
 end
 hook.Add( "InitPostEntity", "LMMESTORESpawnNPCAuto", LMMESTORESpawnNPCAuto)
 
-function ENT:AcceptInput( Name, Activator, Caller )		
+function ENT:AcceptInput( Name, Activator, Caller )
 	if Name == "Use" and Caller:IsPlayer() then
 		if !LMMESTOREUserBanned(Caller) then
 			LMMESTOREOpeneStoreDMANOpen(Caller, self)
